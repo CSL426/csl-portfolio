@@ -4,11 +4,13 @@ from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Walk up from this file (apps/api/server/core/config.py) to find env files.
+# Walk up from this file (server/core/config.py) to find env files.
 # pydantic-settings reads tuples in order; later entries override earlier ones —
 # so local `apps/api/.env` wins over root `.env` if both exist.
-_API_DIR = Path(__file__).resolve().parents[3]
-_REPO_ROOT = _API_DIR.parents[1]
+# In the Docker image the tree is shallow (/srv/server/...), so the repo root
+# may not exist — fall back to the API dir; missing env files are ignored.
+_API_DIR = Path(__file__).resolve().parents[2]
+_REPO_ROOT = _API_DIR.parents[1] if len(_API_DIR.parents) > 1 else _API_DIR
 _ENV_FILES = (_REPO_ROOT / ".env", _API_DIR / ".env")
 
 
