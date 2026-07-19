@@ -75,7 +75,7 @@ GitHub repo → Settings → Secrets and variables → Actions,新增三個 secr
 
 ```bash
 # 允許匿名瀏覽(個人網站)
-gcloud run services add-iam-policy-binding spark-portfolio \
+gcloud run services add-iam-policy-binding csl-portfolio \
   --region="$REGION" --member=allUsers --role=roles/run.invoker
 
 # Gemini API key 放 Secret Manager,掛進 service
@@ -87,7 +87,7 @@ gcloud secrets add-iam-policy-binding google-api-key \
   --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
   --role=roles/secretmanager.secretAccessor
 
-gcloud run services update spark-portfolio --region="$REGION" \
+gcloud run services update csl-portfolio --region="$REGION" \
   --set-secrets=GOOGLE_API_KEY=google-api-key:latest \
   --set-env-vars=APP_ENV=prod
 ```
@@ -99,4 +99,4 @@ gcloud run services update spark-portfolio --region="$REGION" \
 - **repo 還不是 git repository**:需要先 `git init`、建 GitHub repo 並 push,workflow 才會動。注意專案在 Google Drive 上,`node_modules/` 等已在 `.gitignore`。
 - Cloud Run 檔案系統是暫時性的——知識庫資料不能存本機 SQLite/檔案,簡易版先把知識文件打包進 image,動態編輯需求出現時再上 Firestore。
 - 費用:scale to zero + 免費額度,個人站正常流量下應為 $0。
-- 本機驗證 image:`docker build -t spark-portfolio . && docker run -p 8080:8080 -e GOOGLE_API_KEY=... spark-portfolio`,瀏覽 `http://localhost:8080`。
+- 本機驗證 image:`docker build -t csl-portfolio . && docker run -p 8080:8080 -e GOOGLE_API_KEY=... csl-portfolio`,瀏覽 `http://localhost:8080`。

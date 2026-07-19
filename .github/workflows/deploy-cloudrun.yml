@@ -7,7 +7,7 @@ on:
 
 env:
   REGION: asia-east1
-  SERVICE: spark-portfolio
+  SERVICE: csl-portfolio
   AR_REPO: containers
 
 jobs:
