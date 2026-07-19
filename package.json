@@ -1,0 +1,20 @@
+{
+  "name": "spark-portfolio",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev:web": "pnpm --filter @spark/web dev",
+    "build:web": "pnpm --filter @spark/web build",
+    "preview:web": "pnpm --filter @spark/web preview",
+    "type-check": "pnpm --filter @spark/web type-check",
+    "dev:api": "uv run --project apps/api uvicorn server.main:app --reload --port 8000",
+    "test:api": "uv run --project apps/api pytest",
+    "lint:api": "uv run --project apps/api ruff check",
+    "format:api": "uv run --project apps/api ruff format",
+    "typecheck:api": "uv run --project apps/api mypy"
+  }
+}

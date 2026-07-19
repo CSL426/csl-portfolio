@@ -1,0 +1,24 @@
+# Per-app .dockerignore for apps/web build context.
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Build artefacts
+node_modules/
+dist/
+.vite/
+.cache/
+*.tsbuildinfo
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# Tests / docs not needed in image
+**/__tests__/
+*.md

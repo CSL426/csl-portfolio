@@ -1,0 +1,53 @@
+# Rendered at container start by nginx:alpine's docker-entrypoint via envsubst.
+# Only ${API_UPSTREAM}, ${SERVER_NAME}, ${NGINX_PORT} are substituted — nginx's
+# own $vars (e.g. $host, $uri, $proxy_add_x_forwarded_for) are preserved by the
+# NGINX_ENVSUBST_FILTER set in the Dockerfile.
+
+upstream api_upstream {
+  server ${API_UPSTREAM};
+}
+
+server {
+  listen ${NGINX_PORT};
+  server_name ${SERVER_NAME};
+
+  root /usr/share/nginx/html;
+  index index.html;
+
+  # ── Healthcheck ─────────────────────────────────────────────────
+  location = /healthz {
+    access_log off;
+    add_header Content-Type text/plain;
+    return 200 'ok';
+  }
+
+  # ── API proxy ───────────────────────────────────────────────────
+  location /api/ {
+    proxy_pass http://api_upstream;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # Allow long LLM responses
+    proxy_read_timeout 120s;
+    proxy_send_timeout 120s;
+
+    # SSE / streaming friendly
+    proxy_buffering off;
+    proxy_cache off;
+  }
+
+  # ── Static assets: long cache for fingerprinted Vite output ─────
+  location /assets/ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+    try_files $uri =404;
+  }
+
+  # ── SPA fallback ────────────────────────────────────────────────
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
+}

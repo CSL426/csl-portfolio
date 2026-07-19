@@ -1,0 +1,40 @@
+# Compose reads variables from the repo-root .env automatically.
+# Only the web container publishes a host port; api stays on the internal
+# network and is reached via nginx's /api/ proxy.
+
+services:
+  api:
+    build:
+      context: ./apps/api
+    container_name: spark-api
+    env_file:
+      - .env
+    expose:
+      - "${API_PORT:-8000}"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import os, urllib.request; urllib.request.urlopen(f'http://127.0.0.1:{os.environ[\"API_PORT\"]}/api/health')"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  web:
+    build:
+      context: ./apps/web
+    container_name: spark-web
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      # Substituted into nginx.conf.template at container start.
+      API_UPSTREAM: api:${API_PORT:-8000}
+      SERVER_NAME: ${SERVER_NAME:-_}
+      NGINX_PORT: ${NGINX_PORT:-80}
+    ports:
+      - "${PUBLIC_PORT:-8080}:${NGINX_PORT:-80}"
+    restart: unless-stopped

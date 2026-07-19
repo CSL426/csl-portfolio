@@ -1,0 +1,57 @@
+[project]
+name = "server"
+version = "0.1.0"
+description = "FastAPI backend for Liao Chi-Shun's portfolio: LINE webhook + AI Agents."
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    "httpx>=0.28.0",
+    "line-bot-sdk>=3.14.0",
+    "python-dotenv>=1.0.1",
+    "structlog>=24.4.0",
+    "google-adk>=1.25.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+    "httpx>=0.28.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["server"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["server", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "RUF"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["server", "tests"]
+
+[[tool.mypy.overrides]]
+module = [
+    "linebot.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["."]

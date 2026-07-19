@@ -1,0 +1,27 @@
+# Per-app .dockerignore for apps/api build context.
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Python caches / virtualenv
+.venv/
+venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Tests aren't needed in the runtime image
+tests/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

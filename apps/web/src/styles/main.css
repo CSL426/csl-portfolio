@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 100%;
+  }
+  html,
+  body {
+    @apply bg-brand-page text-brand-ink antialiased;
+    font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', 'Segoe UI', sans-serif;
+  }
+  #app {
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .resume-page {
+    width: 210mm;
+    min-height: 297mm;
+    background: #fff;
+    box-shadow: 0 1.25rem 2.8125rem rgba(0, 0, 0, 0.18);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    position: relative;
+  }
+  .resume-frame {
+    width: 46.25rem;
+    max-width: 92%;
+    margin: 0 auto;
+    padding-top: 12mm;
+    padding-bottom: 12mm;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  html,
+  body,
+  #app {
+    background: #fff !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .resume-page {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    page-break-after: always;
+  }
+}
