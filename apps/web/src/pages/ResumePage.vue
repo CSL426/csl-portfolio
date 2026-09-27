@@ -96,7 +96,7 @@ function handleOfficialPdf() {
         <p
           class="mx-auto mt-[0.25rem] text-center text-[0.75rem] leading-[1.5] text-brand-muted"
         >
-          推薦人:{{ resumeData.reference.name }} {{ resumeData.reference.role }}｜{{
+          推薦人：{{ resumeData.reference.name }} {{ resumeData.reference.role }}｜{{
             resumeData.reference.email
           }}｜{{ resumeData.reference.phone }}
         </p>

@@ -22,26 +22,27 @@ export const resumeData: ResumeData = {
       period: '2017/9 - 2021/6',
     },
   ],
-  tools: ['Python、PyTorch', 'FastAPI、RESTful API', 'React、Vue', 'RAG、MongoDB', 'Linux、Git、Docker', 'GCP、AWS', 'ETL Pipeline'],
+  tools: ['Python、PyTorch', 'FastAPI、RESTful API', 'React、Vue', 'RAG、MongoDB', 'Linux、Git、Docker', 'GCP、AWS', 'ETL Pipeline', 'CLI 工具開發、GitHub Actions CI'],
   experiences: [
     {
       title: 'AI 工程師｜創造智能（2025/4 - 至今）',
       bullets: [
-        '多項 AI 開源專案二次開發與客製化,快速交付 POC/MVP;開發 AI 虛擬人應用,串接對嘴(lip-sync)、TTS 與知識庫大腦。',
+        '多項 AI 開源專案二次開發與客製化，快速交付 POC/MVP；開發 AI 虛擬人應用，串接對嘴（lip-sync）、TTS 與知識庫大腦。',
         '建置 RAG 知識庫系統與管理後台，優化高併發與檢索準確度；該產品已成功導入 4 家企業客戶。',
         'FastAPI 開發 RESTful API、MongoDB 資源管理；React/Vue 管理後台獲採用為公司開發範本。',
         '台語 TTS 模型 finetune 與資料前處理；ETL 數據 pipeline 與資料清洗。',
       ],
     },
     {
-      title: '個人專案與接案 - AI 客服 / 知識庫系統',
+      title: '個人專案與接案 - 開發者工具 / AI 客服',
       bullets: [
+        '開源 CLI「ai-config (acg)」：跨 Claude Code、Codex、Antigravity 的設定同步與交接工具，單檔發行、三平台 CI。',
         '自主架設家業 LINE Bot AI 客服系統，以 Google ADK 開發 AI Agent 並整合知識庫；獨立完成架構設計、GCP Cloud Run 部署與維運。',
         '接案協助地方單位開發 LINE OA 知識庫 AI Agent 系統。',
       ],
     },
     {
-      title: 'TibaMe - AI 應用開發培訓(專案 - 路遊憩)',
+      title: 'TibaMe - AI 應用開發培訓（專案 - 路遊憩）',
       bullets: [
         '主導旅遊規劃系統：整合 Line Bot、LLM 與資料庫實現個人化行程規劃，設計路線規劃演算法，以 Docker 容器化部署。',
       ],
@@ -76,7 +77,7 @@ export const resumeData: ResumeData = {
         '大學期間，我精進了 MATLAB 與 Python 程式設計，並透過雷達專題與衛星姿態控制課程奠定跨領域整合能力。此外，擔任系籃副隊長與女籃教練的經歷，亦培養了我的團隊管理與溝通協調能力。',
         '碩士期間專注於太陽物理研究，負責開發影像分析演算法，處理並分析大規模觀測數據，研究成果已發表於三場國際研討會（TGA、AOGS、JpGU）。在此期間，我透過自學演算法培養了量化分析與獨立解決問題的能力，並確立投身機器學習領域的志向。畢業後，我參與 TibaMe AI 工程師培訓，系統化掌握 Python 生態系、PyTorch 深度學習框架與軟體開發規範。',
         '在「路遊憩」專題中，我擔任核心開發角色，負責路線規劃演算法設計、LLM 對話流程與 Prompt 工程，並完成資料庫整合、API 串接及 LINE Bot 介面開發，從中磨練了敏捷協作與跨模組整合技能。',
-        '在前一份工作期間，我主導了多個 AI/LLM 與多媒體專案的開發與部署。其中最具代表性的成果是從零建置 RAG 知識庫系統，優化高併發處理與檢索準確度，並串接對嘴（Lip-sync）模型實現 AI 虛擬人即時互動（該產品已成功導入 4 家企業客戶）；此外，我亦導入 vLLM 加速語音合成（TTS）與其他開源模型的推理速度，並以 React/Vue 開發後台管理介面（交付客戶並建立為公司內部專案的開發標準範本）。在工作之外，我基於 Google ADK 與 GCP Cloud Run，為家族事業獨立研發並維運 LINE Bot 智慧客服系統。這些實戰經驗培養了我端到端（End-to-End）交付 AI 應用與解決複雜問題的能力，期盼能為貴團隊帶來實質貢獻。',
+        '在前一份工作期間，我主導了多個 AI/LLM 與多媒體專案的開發與部署。其中最具代表性的成果是從零建置 RAG 知識庫系統，優化高併發處理與檢索準確度，並串接對嘴（Lip-sync）模型實現 AI 虛擬人即時互動（該產品已成功導入 4 家企業客戶）；此外，我亦導入 vLLM 加速語音合成（TTS）與其他開源模型的推理速度，並以 React/Vue 開發後台管理介面（交付客戶並建立為公司內部專案的開發標準範本）。在工作之外，我基於 Google ADK 與 GCP Cloud Run，為家族事業獨立研發並維運 LINE Bot 智慧客服系統，並開源了跨 AI CLI 的設定同步工具 ai-config（acg），以單一執行檔發行並在三個作業系統上持續整合測試。這些實戰經驗培養了我端到端（End-to-End）交付 AI 應用與解決複雜問題的能力，期盼能為貴團隊帶來實質貢獻。',
       ],
     },
   ],
@@ -91,7 +92,7 @@ export const resumeData: ResumeData = {
       heading: 'Professional Experience',
       paragraphs: [
         'In my previous role, I built a RAG knowledge-base system from scratch: optimizing high-concurrency handling and retrieval accuracy, accelerating inference with vLLM, and integrating a Lip-sync model for real-time AI avatar interactions. I also developed the administrative console in React/Vue, which was delivered to clients and adopted as the company boilerplate.',
-        'Outside of work, I independently built and maintain a smart LINE Bot customer-service system for my family business using Google ADK and GCP Cloud Run. Earlier, as a key member of the Route Leisure project at TibaMe, I designed core routing algorithms, created a Line Bot interface integrated with LLM-based conversational flows, and led Docker containerization.',
+        'Outside of work, I independently built and maintain a smart LINE Bot customer-service system for my family business using Google ADK and GCP Cloud Run, and I open-sourced ai-config (acg), a cross-tool configuration sync and session-handoff CLI for Claude Code, Codex, and Antigravity, shipped as a single executable with CI on Linux, macOS, and Windows. Earlier, as a key member of the Route Leisure project at TibaMe, I designed core routing algorithms, created a Line Bot interface integrated with LLM-based conversational flows, and led Docker containerization.',
       ],
     },
     {

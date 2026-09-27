@@ -4,13 +4,19 @@ import { RouterLink } from 'vue-router'
 const highlights = [
   {
     title: '履歷',
-    desc: '完整中英雙語履歷,可線上瀏覽或下載 PDF / PNG。',
+    desc: '完整中英雙語履歷，可線上瀏覽或下載 PDF / PNG。',
     to: '/resume',
     cta: '查看履歷 →',
   },
   {
+    title: '專案',
+    desc: 'ai-config (acg) 跨 AI CLI 設定同步工具、LINE Bot AI 客服等實際在用的作品。',
+    to: '/projects',
+    cta: '看專案 →',
+  },
+  {
     title: 'AI Agents',
-    desc: '我打造的 AI 助手實驗集合,未來陸續上架。',
+    desc: '我打造的 AI 助手實驗集合，未來陸續上架。',
     to: '/agents',
     cta: '探索 Agents →',
   },
@@ -34,7 +40,7 @@ const highlights = [
       </p>
     </div>
 
-    <div class="grid gap-[1.5rem] md:grid-cols-2">
+    <div class="grid gap-[1.5rem] md:grid-cols-3">
       <RouterLink
         v-for="h in highlights"
         :key="h.to"

@@ -26,10 +26,10 @@ resume/
 ├── apps/
 │   ├── web/                  Vue 3 + TS + Vite + Tailwind
 │   │   ├── src/
-│   │   │   ├── pages/        Home / Resume / Agents / NotFound
+│   │   │   ├── pages/        Home / Resume / AtsResume / Projects / Agents / NotFound
 │   │   │   ├── components/   resume/* + ui/*
 │   │   │   ├── composables/  useDownload, useChat
-│   │   │   ├── data/         resume.ts (履歷內容)
+│   │   │   ├── data/         resume.ts (履歷內容)、projects.ts (專案作品)
 │   │   │   ├── router/
 │   │   │   └── styles/
 │   │   ├── public/           favicon, 履歷 PDF

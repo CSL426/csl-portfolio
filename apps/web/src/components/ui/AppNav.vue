@@ -7,10 +7,15 @@ const route = useRoute()
 const links = [
   { to: '/', label: 'Home' },
   { to: '/resume', label: 'Resume' },
-  { to: '/agents', label: 'AI Agents' },
+  { to: '/projects', label: 'Projects' },
+  { to: '/agents', label: 'Agents' },
 ]
 
 const activePath = computed(() => route.path)
+
+function isActive(to: string): boolean {
+  return activePath.value === to || (to !== '/' && activePath.value.startsWith(to))
+}
 </script>
 
 <template>
@@ -22,17 +27,18 @@ const activePath = computed(() => route.path)
     >
       <RouterLink
         to="/"
-        class="text-[1.125rem] font-bold tracking-wide text-brand-ink hover:opacity-80"
+        class="text-[1rem] font-bold tracking-wide text-brand-ink hover:opacity-80 sm:text-[1.125rem]"
       >
         Spark<span class="text-brand-start">.</span>dev
       </RouterLink>
-      <ul class="flex items-center gap-[1.25rem] text-[0.9375rem]">
+      <ul class="flex items-center gap-[0.125rem] text-[0.8125rem] sm:gap-[1rem] sm:text-[0.9375rem]">
         <li v-for="link in links" :key="link.to">
           <RouterLink
             :to="link.to"
-            class="rounded-full px-[0.875rem] py-[0.375rem] transition"
+            :aria-current="isActive(link.to) ? 'page' : undefined"
+            class="whitespace-nowrap rounded-full px-[0.5rem] py-[0.375rem] transition sm:px-[0.875rem]"
             :class="
-              activePath === link.to
+              isActive(link.to)
                 ? 'bg-brand-ink text-white'
                 : 'text-brand-muted hover:bg-brand-sidebar'
             "

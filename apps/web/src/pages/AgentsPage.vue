@@ -9,7 +9,7 @@ interface AgentPreview {
 }
 
 const agents: AgentPreview[] = [
-  { name: 'Echo', desc: 'Pipeline 測試,把訊息回傳給你。', status: 'live' },
+  { name: 'Echo', desc: 'Pipeline 測試，把訊息回傳給你。', status: 'live' },
   {
     name: 'ADK · Gemini',
     desc: '走 Google Agent Development Kit + Gemini 2.5 Flash。',
@@ -34,7 +34,7 @@ async function onSend() {
       <p class="mb-[0.5rem] text-[0.875rem] tracking-[0.3em] text-brand-muted">AI AGENTS</p>
       <h1 class="text-[clamp(1.75rem,4vw,2.5rem)] font-bold">我正在打造的 AI 助手</h1>
       <p class="mt-[0.75rem] max-w-[40rem] text-[0.9375rem] leading-[1.8] text-brand-muted">
-        後端走 FastAPI,前端透過 <code>/api/chat</code> 呼叫,LINE bot 共用同一個 Agent 路由。
+        後端走 FastAPI，前端透過 <code>/api/chat</code> 呼叫，LINE bot 共用同一個 Agent 路由。
       </p>
     </div>
 
@@ -77,7 +77,7 @@ async function onSend() {
         class="mb-[1rem] flex max-h-[20rem] min-h-[8rem] flex-col gap-[0.5rem] overflow-y-auto rounded-[0.75rem] bg-brand-page p-[1rem]"
       >
         <p v-if="!messages.length" class="text-center text-[0.875rem] text-brand-muted">
-          輸入訊息開始對話。提示:用 <code>/echo</code> 或 <code>/adk</code> 切換 Agent。
+          輸入訊息開始對話。提示：用 <code>/echo</code> 或 <code>/adk</code> 切換 Agent。
         </p>
         <div
           v-for="(m, i) in messages"

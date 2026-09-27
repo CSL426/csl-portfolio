@@ -19,10 +19,10 @@ defineProps<{
       >
         {{ experiencesHeading ?? '相關經歷' }}
       </h3>
-      <ol class="m-0 list-decimal pl-[1.75rem] text-[0.9375rem] leading-[1.65]">
+      <ol class="m-0 list-decimal pl-[1.75rem] text-[0.9375rem] leading-[1.6]">
         <li v-for="(exp, i) in experiences" :key="i" class="mb-[0.375rem]">
           <strong class="text-brand-ink">{{ exp.title }}</strong>
-          <ul class="mt-[0.25rem] flex flex-col gap-[0.25rem] list-none p-0">
+          <ul class="mt-[0.25rem] flex flex-col gap-[0.125rem] list-none p-0">
             <li
               v-for="(b, bi) in exp.bullets"
               :key="bi"

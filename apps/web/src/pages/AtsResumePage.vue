@@ -29,8 +29,8 @@ function handlePrint() {
       </div>
     </div>
     <p class="no-print w-full max-w-[52rem] text-[0.8125rem] leading-[1.7] text-brand-muted">
-      此版本為 ATS(求職系統自動篩選)友善格式:單欄、純文字、無照片與圖示。請用「列印 /
-      另存 PDF」輸出,文字可被系統正確解析;勿使用視覺版的圖片式 PDF 上傳求職平台。
+      此版本為 ATS（求職系統自動篩選）友善格式：單欄、純文字、無照片與圖示。請用「列印 /
+      另存 PDF」輸出，文字可被系統正確解析；勿使用視覺版的圖片式 PDF 上傳求職平台。
     </p>
 
     <!-- ATS document -->
@@ -67,8 +67,8 @@ function handlePrint() {
       <section>
         <h2 class="ats-heading">學歷 Education</h2>
         <div v-for="item in resumeData.education" :key="item.degree" class="ats-entry">
-          <p class="font-bold">{{ item.school }} {{ item.degree }}({{ item.period }})</p>
-          <p v-if="item.note">論文主題:{{ item.note }}</p>
+          <p class="font-bold">{{ item.school }} {{ item.degree }}（{{ item.period }}）</p>
+          <p v-if="item.note">論文主題：{{ item.note }}</p>
         </div>
       </section>
 
@@ -80,7 +80,7 @@ function handlePrint() {
       <section>
         <h2 class="ats-heading">推薦人 Reference</h2>
         <p>
-          {{ resumeData.reference.name }}({{ resumeData.reference.role }})| Email:
+          {{ resumeData.reference.name }}（{{ resumeData.reference.role }}）| Email:
           {{ resumeData.reference.email }} | Phone: {{ resumeData.reference.phone }}
         </p>
       </section>
