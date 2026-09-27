@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { resumeData } from '@/data/resume'
 import { useDownload } from '@/composables/useDownload'
+import { useFitScale } from '@/composables/useFitScale'
+import ResumeSheet from '@/components/resume/ResumeSheet.vue'
 import ProfileCard from '@/components/resume/ProfileCard.vue'
 import SidebarPanel from '@/components/resume/SidebarPanel.vue'
 import ExperienceCard from '@/components/resume/ExperienceCard.vue'
@@ -16,14 +18,21 @@ const academicExperiences = resumeData.experiences.filter((exp) =>
   exp.title.startsWith('學術研究'),
 )
 
-const page1 = ref<HTMLElement | null>(null)
-const page2 = ref<HTMLElement | null>(null)
-const page3 = ref<HTMLElement | null>(null)
+type SheetInstance = InstanceType<typeof ResumeSheet>
+const page1 = ref<SheetInstance | null>(null)
+const page2 = ref<SheetInstance | null>(null)
+const page3 = ref<SheetInstance | null>(null)
 
 const { isExporting, error, exportPng, exportPdf, downloadAsset } = useDownload()
 
+// Shrink the A4 sheets on narrow screens; capture them at full size.
+const { scale: fitScale } = useFitScale()
+const sheetScale = computed(() => (isExporting.value ? 1 : fitScale.value))
+
 function getPageNodes(): HTMLElement[] {
-  return [page1.value, page2.value, page3.value].filter((el): el is HTMLElement => el !== null)
+  return [page1.value, page2.value, page3.value]
+    .map((sheet) => sheet?.sheet ?? null)
+    .filter((el): el is HTMLElement => el !== null)
 }
 
 function handlePng() {
@@ -79,18 +88,22 @@ function handleOfficialPdf() {
     <p v-if="isExporting" class="no-print text-[0.875rem] text-brand-muted">輸出中…</p>
 
     <!-- Page 1 -->
-    <section ref="page1" class="resume-page">
+    <ResumeSheet ref="page1" :scale="sheetScale">
       <span
         class="absolute right-[22mm] bottom-[18mm] text-[0.6875rem] tracking-[0.12em] text-brand-ink/45"
         >01</span
       >
       <div class="resume-frame">
         <ProfileCard :profile="resumeData.profile" />
-        <div class="mt-[0.75rem]">
+        <div class="mt-[0.625rem]">
           <ExperienceCard :strengths="resumeData.strengths" />
         </div>
-        <div class="mt-[0.75rem] grid grid-cols-[30%_70%] gap-[1rem]">
-          <SidebarPanel :education="resumeData.education" :academic="academicExperiences" />
+        <div class="mt-[0.625rem] grid grid-cols-[30%_70%] gap-[1rem]">
+          <SidebarPanel
+            :education="resumeData.education"
+            :academic="academicExperiences"
+            :tools="resumeData.tools"
+          />
           <ExperienceCard :experiences="mainExperiences" />
         </div>
         <p
@@ -101,10 +114,10 @@ function handleOfficialPdf() {
           }}｜{{ resumeData.reference.phone }}
         </p>
       </div>
-    </section>
+    </ResumeSheet>
 
     <!-- Page 2 -->
-    <section ref="page2" class="resume-page">
+    <ResumeSheet ref="page2" :scale="sheetScale">
       <span
         class="absolute right-[22mm] bottom-[18mm] text-[0.6875rem] tracking-[0.12em] text-brand-ink/45"
         >02</span
@@ -112,10 +125,10 @@ function handleOfficialPdf() {
       <div class="resume-frame flex flex-col gap-[1.625rem]">
         <AutobioCard :sections="resumeData.autobiography" />
       </div>
-    </section>
+    </ResumeSheet>
 
     <!-- Page 3 -->
-    <section ref="page3" class="resume-page">
+    <ResumeSheet ref="page3" :scale="sheetScale">
       <span
         class="absolute right-[22mm] bottom-[18mm] text-[0.6875rem] tracking-[0.12em] text-brand-ink/45"
         >03</span
@@ -123,6 +136,6 @@ function handleOfficialPdf() {
       <div class="resume-frame">
         <EnglishSection :sections="resumeData.english" />
       </div>
-    </section>
+    </ResumeSheet>
   </div>
 </template>

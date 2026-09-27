@@ -11,10 +11,13 @@
     "build:web": "pnpm --filter @spark/web build",
     "preview:web": "pnpm --filter @spark/web preview",
     "type-check": "pnpm --filter @spark/web type-check",
+    "lint:web": "pnpm --filter @spark/web lint",
+    "test:web": "pnpm --filter @spark/web test",
     "dev:api": "uv run --project apps/api uvicorn server.main:app --reload --port 8000",
     "test:api": "uv run --project apps/api pytest",
     "lint:api": "uv run --project apps/api ruff check",
     "format:api": "uv run --project apps/api ruff format",
-    "typecheck:api": "uv run --project apps/api mypy"
+    "typecheck:api": "uv run --project apps/api --directory apps/api mypy",
+    "check": "pnpm type-check && pnpm lint:web && pnpm test:web && pnpm lint:api && pnpm test:api"
   }
 }

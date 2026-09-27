@@ -28,7 +28,7 @@ resume/
 │   │   ├── src/
 │   │   │   ├── pages/        Home / Resume / AtsResume / Projects / Agents / NotFound
 │   │   │   ├── components/   resume/* + ui/*
-│   │   │   ├── composables/  useDownload, useChat
+│   │   │   ├── composables/  useDownload, useChat, useFitScale
 │   │   │   ├── data/         resume.ts (履歷內容)、projects.ts (專案作品)
 │   │   │   ├── router/
 │   │   │   └── styles/
@@ -51,7 +51,7 @@ resume/
 
 │
 ├── docs/                     架構與內容素材
-├── archive/legacy-html/      舊 resume.html + Python 工具
+├── archive/legacy-html/      舊 resume.html + Python 工具（gitignored，僅本機）
 ├── docker-compose.yml        web (8080) + api (8000)
 ├── pnpm-workspace.yaml
 └── package.json              workspace 根

@@ -6,7 +6,7 @@ defineProps<{ profile: ProfileInfo }>()
 
 <template>
   <div
-    class="grid grid-cols-[auto_1fr] items-start gap-[1.375rem] rounded-[1.75rem] px-[1.875rem] py-[1.25rem] shadow-profile"
+    class="grid grid-cols-[auto_1fr] items-start gap-[1.375rem] rounded-[1.75rem] px-[1.875rem] py-[1.125rem] shadow-profile"
     style="background: linear-gradient(135deg, #76abd6, #8ebfe5)"
   >
     <div
