@@ -12,7 +12,7 @@ const agents: AgentPreview[] = [
   { name: 'Echo', desc: 'Pipeline 測試，把訊息回傳給你。', status: 'live' },
   {
     name: 'ADK · Gemini',
-    desc: '走 Google Agent Development Kit + Gemini 2.5 Flash。',
+    desc: '走 Google Agent Development Kit + Gemini 3.5 Flash-Lite。',
     status: 'live',
   },
   { name: 'Trip Planner', desc: '基於「路遊憩」的旅遊規劃 Agent。', status: 'coming-soon' },

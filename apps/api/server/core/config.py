@@ -37,7 +37,7 @@ class Settings(BaseSettings):
 
     # Google ADK / Gemini (AI Studio key — get from https://aistudio.google.com/app/apikey)
     google_api_key: str | None = Field(default=None)
-    adk_model: str = Field(default="gemini-3.1-flash")
+    adk_model: str = Field(default="gemini-3.5-flash-lite")
     adk_app_name: str = Field(default="portfolio-server")
     adk_instruction: str = Field(
         default=(
