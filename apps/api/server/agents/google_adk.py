@@ -73,7 +73,7 @@ class GoogleADKAgent(BaseAgent):
     async def handle(self, ctx: AgentContext) -> AgentReply:
         if not self._ensure_runner():
             return AgentReply(
-                text="(Google ADK ?芾身摰?????apps/api/.env 閮?GOOGLE_API_KEY)",
+                text="（Google ADK 尚未設定：請在 apps/api/.env 填入 GOOGLE_API_KEY）",
             )
         assert self._runner is not None
 
@@ -105,6 +105,6 @@ class GoogleADKAgent(BaseAgent):
                         final_parts.append(text)
         except Exception:
             logger.exception("adk_run_failed", session_id=session_id)
-            return AgentReply(text="(ADK runtime error ???撩? log)")
+            return AgentReply(text="（ADK 執行錯誤，請查看伺服器 log）")
 
-        return AgentReply(text="".join(final_parts).strip() or "(瘝?啣?閬?")
+        return AgentReply(text="".join(final_parts).strip() or "（模型沒有回覆內容）")

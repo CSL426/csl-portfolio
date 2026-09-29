@@ -40,5 +40,5 @@ async def test_adk_agent_unconfigured_returns_friendly_message() -> None:
     assert agent is not None
     reply = await agent.handle(AgentContext(user_id="u1", source="test", message="hi"))
     # Either it returns the "not configured" message, or it actually worked
-    # because env is set in CI/local ??both are acceptable.
+    # because env is set in CI/local; both are acceptable.
     assert reply.text
