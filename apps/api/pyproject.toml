@@ -39,6 +39,8 @@ src = ["server", "tests"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "N", "RUF"]
 ignore = ["E501"]
+# User-facing copy is Traditional Chinese; full-width punctuation is intended.
+allowed-confusables = ["（", "）", "：", "，", "；"]
 
 [tool.mypy]
 python_version = "3.11"
