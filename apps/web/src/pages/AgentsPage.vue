@@ -15,6 +15,11 @@ const agents: AgentPreview[] = [
     desc: '走 Google Agent Development Kit + Gemini 3.5 Flash-Lite。',
     status: 'live',
   },
+  {
+    name: 'Claude',
+    desc: 'Anthropic Claude Opus 5.5，被安全分類器擋下時自動改由備援模型回答。',
+    status: 'live',
+  },
   { name: 'Trip Planner', desc: '基於「路遊憩」的旅遊規劃 Agent。', status: 'coming-soon' },
 ]
 
@@ -38,7 +43,7 @@ async function onSend() {
       </p>
     </div>
 
-    <ul class="mb-[2.5rem] grid gap-[1.25rem] md:grid-cols-3">
+    <ul class="mb-[2.5rem] grid gap-[1.25rem] sm:grid-cols-2 lg:grid-cols-4">
       <li
         v-for="a in agents"
         :key="a.name"
@@ -77,7 +82,7 @@ async function onSend() {
         class="mb-[1rem] flex max-h-[20rem] min-h-[8rem] flex-col gap-[0.5rem] overflow-y-auto rounded-[0.75rem] bg-brand-page p-[1rem]"
       >
         <p v-if="!messages.length" class="text-center text-[0.875rem] text-brand-muted">
-          輸入訊息開始對話。提示：用 <code>/echo</code> 或 <code>/adk</code> 切換 Agent。
+          輸入訊息開始對話。提示：用 <code>/claude</code>、<code>/adk</code> 或 <code>/echo</code> 開頭切換 Agent。
         </p>
         <div
           v-for="(m, i) in messages"

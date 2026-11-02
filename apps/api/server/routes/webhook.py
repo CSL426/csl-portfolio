@@ -63,8 +63,7 @@ async def _dispatch_event(event: Any) -> None:
 
         settings = get_settings()
         raw = event.message.text
-        agent = registry.route(raw, default=settings.default_agent)
-        payload = registry.strip_prefix(raw) if agent.name != settings.default_agent else raw
+        agent, payload = registry.resolve(raw, default=settings.default_agent)
 
         user_id = (event.source.user_id if event.source else None) or "unknown"
 

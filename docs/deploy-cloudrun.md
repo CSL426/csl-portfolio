@@ -92,6 +92,20 @@ gcloud run services update csl-portfolio --region="$REGION" \
   --set-env-vars=APP_ENV=prod
 ```
 
+改用 Claude 當預設 Agent(金鑰同樣放 Secret Manager):
+
+```bash
+echo -n "你的-anthropic-api-key" | gcloud secrets create anthropic-api-key --data-file=-
+gcloud secrets add-iam-policy-binding anthropic-api-key \
+  --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+  --role=roles/secretmanager.secretAccessor
+
+gcloud run services update csl-portfolio --region="$REGION" \
+  --update-secrets=ANTHROPIC_API_KEY=anthropic-api-key:latest \
+  --update-env-vars=DEFAULT_AGENT=claude
+# 金鑰若沒有綁定單一 workspace,再加上 ANTHROPIC_WORKSPACE_ID=wrkspc_...
+```
+
 之後每次 GitHub Actions 部署只換 image,**env vars 與 secrets 設定會沿用**,不用重設。LINE bot 金鑰(`LINE_CHANNEL_SECRET` / `LINE_CHANNEL_ACCESS_TOKEN`)之後要用同樣方式掛。
 
 ## 尚未完成 / 注意事項

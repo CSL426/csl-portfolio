@@ -15,6 +15,7 @@ def test_registry_has_expected_agents() -> None:
     names = registry.names()
     assert "echo" in names
     assert "adk" in names
+    assert "claude" in names
 
 
 def test_registry_route_with_prefix() -> None:
@@ -42,3 +43,15 @@ async def test_adk_agent_unconfigured_returns_friendly_message() -> None:
     # Either it returns the "not configured" message, or it actually worked
     # because env is set in CI/local; both are acceptable.
     assert reply.text
+
+
+def test_registry_resolve_strips_prefix_even_for_default() -> None:
+    agent, payload = registry.resolve("/echo hi", default="echo")
+    assert agent.name == "echo"
+    assert payload == "hi"
+
+
+def test_registry_resolve_unknown_prefix_goes_to_default_unchanged() -> None:
+    agent, payload = registry.resolve("/nope hi", default="echo")
+    assert agent.name == "echo"
+    assert payload == "/nope hi"

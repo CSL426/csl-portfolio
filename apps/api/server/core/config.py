@@ -1,5 +1,6 @@
 from functools import cached_property, lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -12,6 +13,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 _API_DIR = Path(__file__).resolve().parents[2]
 _REPO_ROOT = _API_DIR.parents[1] if len(_API_DIR.parents) > 1 else _API_DIR
 _ENV_FILES = (_REPO_ROOT / ".env", _API_DIR / ".env")
+
+_ASSISTANT_INSTRUCTION = (
+    "You are Spark, the AI assistant on Liao Chi-Shun's portfolio site. "
+    "Be concise, friendly, and bilingual (Traditional Chinese + English). "
+    "When asked about Spark's background, defer to the resume on the site."
+)
 
 
 class Settings(BaseSettings):
@@ -39,13 +46,19 @@ class Settings(BaseSettings):
     google_api_key: str | None = Field(default=None)
     adk_model: str = Field(default="gemini-3.5-flash-lite")
     adk_app_name: str = Field(default="portfolio-server")
-    adk_instruction: str = Field(
-        default=(
-            "You are Spark, the AI assistant on Liao Chi-Shun's portfolio site. "
-            "Be concise, friendly, and bilingual (Traditional Chinese + English). "
-            "When asked about Spark's background, defer to the resume on the site."
-        )
-    )
+    adk_instruction: str = Field(default=_ASSISTANT_INSTRUCTION)
+
+    # Claude (Anthropic API key — https://platform.claude.com/settings/keys)
+    anthropic_api_key: str | None = Field(default=None)
+    # Only for keys not scoped to a single workspace; sent as `anthropic-workspace-id`.
+    anthropic_workspace_id: str | None = Field(default=None)
+    claude_model: str = Field(default="claude-opus-5-5")
+    # low | medium | high | xhigh | max — short chat replies do well at low.
+    claude_effort: Literal["low", "medium", "high", "xhigh", "max"] = Field(default="low")
+    claude_max_tokens: int = Field(default=16000)
+    # Conversations longer than this many exchanges start over.
+    claude_max_turns: int = Field(default=20)
+    claude_instruction: str = Field(default=_ASSISTANT_INSTRUCTION)
 
     @cached_property
     def effective_cors_origins(self) -> list[str]:
@@ -62,6 +75,10 @@ class Settings(BaseSettings):
     @property
     def adk_configured(self) -> bool:
         return bool(self.google_api_key)
+
+    @property
+    def claude_configured(self) -> bool:
+        return bool(self.anthropic_api_key)
 
 
 @lru_cache

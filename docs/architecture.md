@@ -15,6 +15,7 @@ Monorepo:Vue 3 SPA(`apps/web`) + FastAPI 後端(`apps/api`),後端同時服務�
 └──────────────┘         │   AgentRegistry              │
                          │   ├── EchoAgent              │
                          │   ├── GoogleADKAgent ────────┼──→ Gemini (AI Studio / Vertex)
+                         │   ├── ClaudeAgent ───────────┼──→ Claude (Anthropic API)
                          │   └── (你的 Agent)            │
                          └──────────────────────────────┘
 ```
@@ -69,7 +70,7 @@ class BaseAgent(ABC):
 `AgentContext` 帶 `user_id` / `source` ('line' | 'web' | 'test') / `message` / `metadata`。
 `AgentReply` 帶 `text` + `extra`(quick reply、image url 等)。
 
-**路由規則**:訊息以 `/<agent_name>` 開頭 → 切到那個 agent;否則用 `DEFAULT_AGENT`。
+**路由規則**:訊息以 `/<agent_name>` 開頭 → 切到那個 agent 並去掉前綴;否則用 `DEFAULT_AGENT`。網頁 `/api/chat` 與 LINE webhook 都走 `registry.resolve()`。網頁請求若帶 `agent` 欄位則以它為準。
 
 新增一個 Agent:
 

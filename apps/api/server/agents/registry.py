@@ -1,4 +1,5 @@
 from server.agents.base import BaseAgent
+from server.agents.claude import ClaudeAgent
 from server.agents.echo import EchoAgent
 from server.agents.google_adk import GoogleADKAgent
 
@@ -29,6 +30,19 @@ class AgentRegistry:
         agent = self.get(self._parse_prefix(message) or default) or self._agents[default]
         return agent
 
+    def resolve(self, message: str, default: str) -> tuple[BaseAgent, str]:
+        """Pick the agent for a raw message and return it with the payload.
+
+        A leading `/<name>` naming a registered agent selects it and is removed
+        from the payload, even when it names the default agent. Anything else
+        goes to the default agent unchanged.
+        """
+        prefix = self._parse_prefix(message)
+        agent = self.get(prefix) if prefix else None
+        if agent is not None:
+            return agent, self.strip_prefix(message)
+        return self.get(default) or self._agents[default], message
+
     @staticmethod
     def _parse_prefix(message: str) -> str | None:
         stripped = message.strip()
@@ -49,3 +63,4 @@ class AgentRegistry:
 registry = AgentRegistry()
 registry.register(EchoAgent())
 registry.register(GoogleADKAgent())
+registry.register(ClaudeAgent())

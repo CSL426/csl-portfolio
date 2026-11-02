@@ -1,4 +1,5 @@
 from server.agents.base import AgentContext, AgentReply, BaseAgent
+from server.agents.claude import ClaudeAgent
 from server.agents.echo import EchoAgent
 from server.agents.google_adk import GoogleADKAgent
 from server.agents.registry import AgentRegistry, registry
@@ -8,6 +9,7 @@ __all__ = [
     "AgentRegistry",
     "AgentReply",
     "BaseAgent",
+    "ClaudeAgent",
     "EchoAgent",
     "GoogleADKAgent",
     "registry",

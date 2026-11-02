@@ -51,7 +51,7 @@ export const projects: ProjectItem[] = [
       'nginx 於容器啟動時 envsubst 注入設定，前端 bundle 不烘進任何環境變數。',
       'Workload Identity Federation 免金鑰部署到 Cloud Run。',
     ],
-    stack: ['Vue 3', 'TypeScript', 'Tailwind', 'FastAPI', 'Docker', 'GCP Cloud Run'],
+    stack: ['Vue 3', 'TypeScript', 'Tailwind', 'FastAPI', 'Claude API', 'Google ADK', 'Docker', 'GCP Cloud Run'],
     links: [{ label: 'GitHub', href: 'https://github.com/CSL426/csl-portfolio' }],
   },
   {

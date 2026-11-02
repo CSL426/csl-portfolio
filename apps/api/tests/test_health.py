@@ -34,3 +34,19 @@ def test_line_webhook_unconfigured_returns_503() -> None:
         headers={"x-line-signature": "fake"},
     )
     assert r.status_code == 503
+
+
+def test_chat_endpoint_prefix_selects_agent() -> None:
+    client = TestClient(app)
+    r = client.post("/api/chat", json={"message": "/echo ping"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["agent"] == "echo"
+    assert body["text"].endswith(" ping")
+
+
+def test_chat_endpoint_bare_prefix_asks_for_message() -> None:
+    client = TestClient(app)
+    r = client.post("/api/chat", json={"message": "/echo"})
+    assert r.status_code == 200
+    assert "輸入訊息" in r.json()["text"]
