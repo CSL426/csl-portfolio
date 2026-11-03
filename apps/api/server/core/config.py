@@ -52,13 +52,20 @@ class Settings(BaseSettings):
     anthropic_api_key: str | None = Field(default=None)
     # Only for keys not scoped to a single workspace; sent as `anthropic-workspace-id`.
     anthropic_workspace_id: str | None = Field(default=None)
-    claude_model: str = Field(default="claude-opus-5-5")
+    claude_model: str = Field(default="claude-haiku-5-5")
     # low | medium | high | xhigh | max — short chat replies do well at low.
     claude_effort: Literal["low", "medium", "high", "xhigh", "max"] = Field(default="low")
-    claude_max_tokens: int = Field(default=16000)
+    claude_max_tokens: int = Field(default=4096)
     # Conversations longer than this many exchanges start over.
     claude_max_turns: int = Field(default=20)
     claude_instruction: str = Field(default=_ASSISTANT_INSTRUCTION)
+    claude_session_ttl_seconds: int = Field(default=3600)
+    claude_max_sessions: int = Field(default=500)
+
+    # Public /api/chat limits. The daily cap is shared by all visitors.
+    chat_limit_per_session_per_minute: int = Field(default=10)
+    chat_limit_per_ip_per_minute: int = Field(default=30)
+    chat_limit_per_day: int = Field(default=1000)
 
     @cached_property
     def effective_cors_origins(self) -> list[str]:

@@ -42,7 +42,7 @@ def test_chat_endpoint_prefix_selects_agent() -> None:
     assert r.status_code == 200
     body = r.json()
     assert body["agent"] == "echo"
-    assert body["text"].endswith(" ping")
+    assert body["text"] == "[echo:web] ping"
 
 
 def test_chat_endpoint_bare_prefix_asks_for_message() -> None:

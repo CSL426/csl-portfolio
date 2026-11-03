@@ -17,7 +17,7 @@ const agents: AgentPreview[] = [
   },
   {
     name: 'Claude',
-    desc: 'Anthropic Claude Opus 5.5，被安全分類器擋下時自動改由備援模型回答。',
+    desc: 'Anthropic Claude Haiku 5.5，回覆快，適合公開聊天。',
     status: 'live',
   },
   { name: 'Trip Planner', desc: '基於「路遊憩」的旅遊規劃 Agent。', status: 'coming-soon' },

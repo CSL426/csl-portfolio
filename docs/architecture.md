@@ -72,6 +72,8 @@ class BaseAgent(ABC):
 
 **路由規則**:訊息以 `/<agent_name>` 開頭 → 切到那個 agent 並去掉前綴;否則用 `DEFAULT_AGENT`。網頁 `/api/chat` 與 LINE webhook 都走 `registry.resolve()`。網頁請求若帶 `agent` 欄位則以它為準。
 
+**網頁 session**:訪客身分來自伺服器簽發的 HttpOnly cookie(`portfolio_session`),不接受前端傳 `user_id`。`DELETE /api/chat/session` 會清掉該訪客在所有 Agent 的對話。`/api/chat` 依 session、IP 與全站每日上限限流(`CHAT_LIMIT_*`),超過回 429。
+
 新增一個 Agent:
 
 ```python

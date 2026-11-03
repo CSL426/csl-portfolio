@@ -110,7 +110,7 @@ gcloud run services update csl-portfolio --region="$REGION" \
 
 ## 尚未完成 / 注意事項
 
-- **repo 還不是 git repository**:需要先 `git init`、建 GitHub repo 並 push,workflow 才會動。注意專案在 Google Drive 上,`node_modules/` 等已在 `.gitignore`。
+- 對話歷史與限流計數都存在程序記憶體,所以 workflow 固定 `--max-instances=1`;重啟或重新部署後會清空。上線前也請到 Anthropic Console 設定月花費上限。
 - Cloud Run 檔案系統是暫時性的——知識庫資料不能存本機 SQLite/檔案,簡易版先把知識文件打包進 image,動態編輯需求出現時再上 Firestore。
 - 費用:scale to zero + 免費額度,個人站正常流量下應為 $0。
 - 本機驗證 image:`docker build -t csl-portfolio . && docker run -p 8080:8080 -e GOOGLE_API_KEY=... csl-portfolio`,瀏覽 `http://localhost:8080`。

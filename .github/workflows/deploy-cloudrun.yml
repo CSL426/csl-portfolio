@@ -44,6 +44,9 @@ jobs:
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
           image: ${{ env.IMAGE }}
+          # Conversation history and rate limits live in process memory, so one
+          # instance keeps them consistent and also caps what abuse can cost.
+          flags: --max-instances=1
 
       - name: Show deployed URL
         run: echo "Deployed to ${{ steps.deploy.outputs.url }}"

@@ -26,14 +26,14 @@ export const projects: ProjectItem[] = [
   {
     id: 'line-ai-agent',
     name: 'LINE Bot AI 客服',
-    tagline: '家業與地方單位的知識庫 AI Agent',
+    tagline: '家業 LINE 官方帳號的 AI 客服 Agent',
     period: '2025 - 至今',
     status: 'live',
     summary:
-      '以 Google ADK 開發 AI Agent 並整合知識庫，透過 LINE Official Account 提供客服。獨立完成架構設計、GCP Cloud Run 部署與維運，另接案協助地方單位建置同類系統。',
+      '以 Google ADK 開發 AI Agent，透過 LINE Official Account 為家業提供客服，回答範圍以公司核可資料為主，並用工具回傳固定卡片與文字。獨立完成架構設計、GCP Cloud Run 部署與維運。另接案協助地方單位開發 LINE OA 知識庫 AI Agent 系統。',
     highlights: [
-      'Google ADK + Gemini 對話流程，知識庫檢索回答常見問題。',
-      'LINE webhook 驗章後立即回 200，事件丟到背景任務處理，避免 LINE 重送。',
+      'Google ADK + Gemini 對話流程，以工具回傳固定卡片與文字，並比較多個模型的速度與回答品質。',
+      '遷移到 LINE SDK v3，以 48 則舊 SDK 實際輸出作為 golden test 基準。',
       'GCP Cloud Run 無伺服器部署，GitHub Actions 自動發布。',
     ],
     stack: ['Python', 'FastAPI', 'Google ADK', 'Gemini', 'LINE Messaging API', 'GCP Cloud Run'],

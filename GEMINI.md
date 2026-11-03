@@ -23,7 +23,7 @@ docs/             架構、部署、履歷規則
 pnpm install                 # web deps (Node ≥ 22, pnpm via packageManager)
 uv sync --project apps/api   # api deps
 pnpm dev:web / pnpm dev:api  # Vite on 5173 proxies /api → uvicorn on 8000
-pnpm check                   # type-check + lint:web + test:web + lint:api + test:api
+pnpm check                   # type-check + lint:web + test:web + lint:api + typecheck:api + test:api
 pnpm build:web               # vue-tsc -b && vite build
 pnpm typecheck:api           # mypy --strict
 ```

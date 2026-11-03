@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Literal
+from typing import Any, Final, Literal
+
+EMPTY_MESSAGE_REPLY: Final = "（請在指令後面輸入訊息）"
 
 
 @dataclass
@@ -36,3 +38,6 @@ class BaseAgent(ABC):
     @abstractmethod
     async def handle(self, ctx: AgentContext) -> AgentReply:
         """Process a single user turn and return one reply."""
+
+    async def reset(self, source: str, user_id: str) -> None:  # noqa: B027
+        """Forget a user's conversation. Stateless agents have nothing to do."""

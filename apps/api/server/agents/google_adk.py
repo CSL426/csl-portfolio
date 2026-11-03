@@ -70,6 +70,17 @@ class GoogleADKAgent(BaseAgent):
             )
         self._sessions.add(session_id)
 
+    async def reset(self, source: str, user_id: str) -> None:
+        session_id = f"{source}:{user_id}"
+        if self._runner is None or session_id not in self._sessions:
+            return
+        await self._runner.session_service.delete_session(
+            app_name=self.settings.adk_app_name,
+            user_id=session_id,
+            session_id=session_id,
+        )
+        self._sessions.discard(session_id)
+
     async def handle(self, ctx: AgentContext) -> AgentReply:
         if not self._ensure_runner():
             return AgentReply(

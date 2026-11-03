@@ -6,7 +6,7 @@ from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request, 
 from linebot.v3.exceptions import InvalidSignatureError
 from linebot.v3.webhooks import MessageEvent, TextMessageContent
 
-from server.agents import AgentContext, registry
+from server.agents import EMPTY_MESSAGE_REPLY, AgentContext, registry
 from server.core.config import get_settings
 from server.core.logging import get_logger
 from server.integrations.line_client import get_parser, reply_text
@@ -64,6 +64,9 @@ async def _dispatch_event(event: Any) -> None:
         settings = get_settings()
         raw = event.message.text
         agent, payload = registry.resolve(raw, default=settings.default_agent)
+        if not payload.strip():
+            reply_text(event.reply_token, EMPTY_MESSAGE_REPLY)
+            return
 
         user_id = (event.source.user_id if event.source else None) or "unknown"
 

@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+import anthropic
+import httpx2
 import pytest
 from server.agents import AgentContext
 from server.agents.claude import ClaudeAgent
@@ -26,7 +28,7 @@ class _Response:
     content: list[_Block]
     stop_reason: str = "end_turn"
     stop_details: _StopDetails | None = None
-    model: str = "claude-opus-5-5"
+    model: str = "claude-haiku-5-5"
 
 
 @dataclass
@@ -42,13 +44,12 @@ class _FakeMessages:
 
 class _FakeClient:
     def __init__(self, replies: list[_Response]) -> None:
-        self.beta = type("Beta", (), {})()
-        self.beta.messages = _FakeMessages(replies)
+        self.messages = _FakeMessages(replies)
 
 
 def _agent(replies: list[_Response]) -> tuple[ClaudeAgent, _FakeMessages]:
     client = _FakeClient(replies)
-    return ClaudeAgent(client=client), client.beta.messages  # type: ignore[arg-type]
+    return ClaudeAgent(client=client), client.messages  # type: ignore[arg-type]
 
 
 def _ctx(message: str, user_id: str = "u1") -> AgentContext:
@@ -66,13 +67,14 @@ async def test_claude_unconfigured_returns_friendly_message(
 
 
 @pytest.mark.asyncio
-async def test_claude_sends_fallbacks_and_effort() -> None:
+async def test_claude_sends_effort_and_no_fallbacks() -> None:
     agent, messages = _agent([_Response([_Block("thinking"), _Block("text", "你好")])])
     reply = await agent.handle(_ctx("hi"))
     assert reply.text == "你好"
     call = messages.calls[0]
-    assert call["fallbacks"] == "default"
-    assert call["betas"] == ["server-side-fallback-2026-07-01"]
+    # Haiku has no server-side fallback, so these must not be sent.
+    assert "fallbacks" not in call
+    assert "betas" not in call
     assert call["output_config"] == {"effort": agent.settings.claude_effort}
 
 
@@ -115,3 +117,54 @@ async def test_claude_starts_over_after_max_turns(monkeypatch: pytest.MonkeyPatc
     await agent.handle(_ctx("one"))
     await agent.handle(_ctx("two"))
     assert messages.calls[1]["messages"] == [{"role": "user", "content": "two"}]
+
+
+@pytest.mark.asyncio
+async def test_claude_reset_forgets_history() -> None:
+    agent, messages = _agent([_Response([_Block("text", "A")]), _Response([_Block("text", "B")])])
+    await agent.handle(_ctx("one"))
+    await agent.reset("test", "u1")
+    await agent.handle(_ctx("two"))
+    assert messages.calls[1]["messages"] == [{"role": "user", "content": "two"}]
+
+
+@pytest.mark.asyncio
+async def test_claude_idle_sessions_expire(monkeypatch: pytest.MonkeyPatch) -> None:
+    now = [0.0]
+    client = _FakeClient([_Response([_Block("text", str(i))]) for i in range(2)])
+    agent = ClaudeAgent(client=client, clock=lambda: now[0])  # type: ignore[arg-type]
+    monkeypatch.setattr(agent.settings, "claude_session_ttl_seconds", 60)
+    await agent.handle(_ctx("one", user_id="alice"))
+    now[0] = 61.0
+    await agent.handle(_ctx("two", user_id="bob"))
+    assert list(agent._sessions) == ["test:bob"]
+
+
+@pytest.mark.asyncio
+async def test_claude_session_count_is_bounded(monkeypatch: pytest.MonkeyPatch) -> None:
+    agent, _ = _agent([_Response([_Block("text", str(i))]) for i in range(3)])
+    monkeypatch.setattr(agent.settings, "claude_max_sessions", 2)
+    for name in ("a", "b", "c"):
+        await agent.handle(_ctx("hi", user_id=name))
+    assert list(agent._sessions) == ["test:b", "test:c"]
+
+
+@pytest.mark.asyncio
+async def test_claude_timeout_returns_friendly_message() -> None:
+    agent, messages = _agent([])
+
+    async def _timeout(**_: Any) -> _Response:
+        raise anthropic.APITimeoutError(request=httpx2.Request("POST", "https://example.test"))
+
+    messages.create = _timeout  # type: ignore[method-assign]
+    reply = await agent.handle(_ctx("hi"))
+    assert "無法連線" in reply.text
+
+
+def test_claude_client_bounds_the_wait_for_line(monkeypatch: pytest.MonkeyPatch) -> None:
+    agent = ClaudeAgent()
+    monkeypatch.setattr(agent.settings, "anthropic_api_key", "test-key")
+    client = agent._ensure_client()
+    assert client is not None
+    assert client.timeout == 15.0
+    assert client.max_retries == 1
