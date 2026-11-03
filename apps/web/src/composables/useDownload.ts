@@ -1,12 +1,16 @@
-import { ref } from 'vue'
-import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
+import { nextTick, ref } from 'vue'
+
+// html2canvas + jsPDF are ~550 kB minified. Load them only when the user
+// actually clicks a download button so the resume page itself stays light.
+const loadHtml2Canvas = () => import('html2canvas').then((m) => m.default)
+const loadJsPdf = () => import('jspdf').then((m) => m.default)
 
 export function useDownload() {
   const isExporting = ref(false)
   const error = ref<string | null>(null)
 
   async function captureNodes(nodes: HTMLElement[]): Promise<HTMLCanvasElement[]> {
+    const html2canvas = await loadHtml2Canvas()
     const canvases: HTMLCanvasElement[] = []
     for (const node of nodes) {
       const canvas = await html2canvas(node, {
@@ -24,6 +28,7 @@ export function useDownload() {
     isExporting.value = true
     error.value = null
     try {
+      await nextTick()
       const canvases = await captureNodes(nodes)
       canvases.forEach((canvas, idx) => {
         const link = document.createElement('a')
@@ -42,7 +47,8 @@ export function useDownload() {
     isExporting.value = true
     error.value = null
     try {
-      const canvases = await captureNodes(nodes)
+      await nextTick()
+      const [canvases, jsPDF] = await Promise.all([captureNodes(nodes), loadJsPdf()])
       const pdf = new jsPDF({
         unit: 'mm',
         format: 'a4',

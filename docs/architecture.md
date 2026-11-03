@@ -15,6 +15,7 @@ Monorepo:Vue 3 SPA(`apps/web`) + FastAPI 後端(`apps/api`),後端同時服務�
 └──────────────┘         │   AgentRegistry              │
                          │   ├── EchoAgent              │
                          │   ├── GoogleADKAgent ────────┼──→ Gemini (AI Studio / Vertex)
+                         │   ├── ClaudeAgent ───────────┼──→ Claude (Anthropic API)
                          │   └── (你的 Agent)            │
                          └──────────────────────────────┘
 ```
@@ -26,10 +27,10 @@ resume/
 ├── apps/
 │   ├── web/                  Vue 3 + TS + Vite + Tailwind
 │   │   ├── src/
-│   │   │   ├── pages/        Home / Resume / Agents / NotFound
+│   │   │   ├── pages/        Home / Resume / AtsResume / Projects / Agents / NotFound
 │   │   │   ├── components/   resume/* + ui/*
-│   │   │   ├── composables/  useDownload, useChat
-│   │   │   ├── data/         resume.ts (履歷內容)
+│   │   │   ├── composables/  useDownload, useChat, useFitScale
+│   │   │   ├── data/         resume.ts (履歷內容)、projects.ts (專案作品)
 │   │   │   ├── router/
 │   │   │   └── styles/
 │   │   ├── public/           favicon, 履歷 PDF
@@ -51,7 +52,7 @@ resume/
 
 │
 ├── docs/                     架構與內容素材
-├── archive/legacy-html/      舊 resume.html + Python 工具
+├── archive/legacy-html/      舊 resume.html + Python 工具（gitignored，僅本機）
 ├── docker-compose.yml        web (8080) + api (8000)
 ├── pnpm-workspace.yaml
 └── package.json              workspace 根
@@ -69,7 +70,11 @@ class BaseAgent(ABC):
 `AgentContext` 帶 `user_id` / `source` ('line' | 'web' | 'test') / `message` / `metadata`。
 `AgentReply` 帶 `text` + `extra`(quick reply、image url 等)。
 
-**路由規則**:訊息以 `/<agent_name>` 開頭 → 切到那個 agent;否則用 `DEFAULT_AGENT`。
+**路由規則**:訊息以 `/<agent_name>` 開頭 → 切到那個 agent 並去掉前綴;否則用 `DEFAULT_AGENT`。網頁 `/api/chat` 與 LINE webhook 都走 `registry.resolve()`。網頁請求若帶 `agent` 欄位則以它為準。
+
+**網頁 session**:訪客身分來自伺服器簽發的 HttpOnly cookie(`portfolio_session`),不接受前端傳 `user_id`。`DELETE /api/chat/session` 會清掉該訪客在所有 Agent 的對話。`/api/chat` 依 session、IP 與全站每日上限限流(`CHAT_LIMIT_*`),超過回 429。
+
+**助理提示詞**:網頁與 LINE 的助理都用 `server/core/assistant_prompt.py` 組出的系統提示,內容來自 `server/core/site_profile.json`。這個檔案由 `apps/web/src/data/*.ts` 產生,改了文案要跑 `pnpm update:profile`,否則測試會失敗。Claude 的回覆在輸出前會把 Big5 編不出來的簡體字轉成繁體。
 
 新增一個 Agent:
 

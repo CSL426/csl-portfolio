@@ -1,8 +1,11 @@
 from functools import cached_property, lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from server.core.assistant_prompt import build_assistant_instruction
 
 # Walk up from this file (server/core/config.py) to find env files.
 # pydantic-settings reads tuples in order; later entries override earlier ones —
@@ -12,6 +15,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 _API_DIR = Path(__file__).resolve().parents[2]
 _REPO_ROOT = _API_DIR.parents[1] if len(_API_DIR.parents) > 1 else _API_DIR
 _ENV_FILES = (_REPO_ROOT / ".env", _API_DIR / ".env")
+
+_ASSISTANT_INSTRUCTION = build_assistant_instruction()
 
 
 class Settings(BaseSettings):
@@ -37,15 +42,28 @@ class Settings(BaseSettings):
 
     # Google ADK / Gemini (AI Studio key — get from https://aistudio.google.com/app/apikey)
     google_api_key: str | None = Field(default=None)
-    adk_model: str = Field(default="gemini-3.1-flash")
+    adk_model: str = Field(default="gemini-3.5-flash-lite")
     adk_app_name: str = Field(default="portfolio-server")
-    adk_instruction: str = Field(
-        default=(
-            "You are Spark, the AI assistant on Liao Chi-Shun's portfolio site. "
-            "Be concise, friendly, and bilingual (Traditional Chinese + English). "
-            "When asked about Spark's background, defer to the resume on the site."
-        )
-    )
+    adk_instruction: str = Field(default=_ASSISTANT_INSTRUCTION)
+
+    # Claude (Anthropic API key — https://platform.claude.com/settings/keys)
+    anthropic_api_key: str | None = Field(default=None)
+    # Only for keys not scoped to a single workspace; sent as `anthropic-workspace-id`.
+    anthropic_workspace_id: str | None = Field(default=None)
+    claude_model: str = Field(default="claude-haiku-5-5")
+    # low | medium | high | xhigh | max — short chat replies do well at low.
+    claude_effort: Literal["low", "medium", "high", "xhigh", "max"] = Field(default="low")
+    claude_max_tokens: int = Field(default=4096)
+    # Conversations longer than this many exchanges start over.
+    claude_max_turns: int = Field(default=20)
+    claude_instruction: str = Field(default=_ASSISTANT_INSTRUCTION)
+    claude_session_ttl_seconds: int = Field(default=3600)
+    claude_max_sessions: int = Field(default=500)
+
+    # Public /api/chat limits. The daily cap is shared by all visitors.
+    chat_limit_per_session_per_minute: int = Field(default=10)
+    chat_limit_per_ip_per_minute: int = Field(default=30)
+    chat_limit_per_day: int = Field(default=1000)
 
     @cached_property
     def effective_cors_origins(self) -> list[str]:
@@ -62,6 +80,10 @@ class Settings(BaseSettings):
     @property
     def adk_configured(self) -> bool:
         return bool(self.google_api_key)
+
+    @property
+    def claude_configured(self) -> bool:
+        return bool(self.anthropic_api_key)
 
 
 @lru_cache

@@ -1,6 +1,7 @@
 import pytest
 from server.agents import AgentContext, registry
 from server.agents.echo import EchoAgent
+from server.agents.google_adk import GoogleADKAgent
 
 
 @pytest.mark.asyncio
@@ -15,6 +16,7 @@ def test_registry_has_expected_agents() -> None:
     names = registry.names()
     assert "echo" in names
     assert "adk" in names
+    assert "claude" in names
 
 
 def test_registry_route_with_prefix() -> None:
@@ -34,11 +36,23 @@ def test_registry_strip_prefix() -> None:
 
 
 @pytest.mark.asyncio
-async def test_adk_agent_unconfigured_returns_friendly_message() -> None:
+async def test_adk_agent_unconfigured_returns_friendly_message(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """When GOOGLE_API_KEY isn't set, ADK agent should degrade gracefully."""
-    agent = registry.get("adk")
-    assert agent is not None
+    agent = GoogleADKAgent()
+    monkeypatch.setattr(agent.settings, "google_api_key", None)
     reply = await agent.handle(AgentContext(user_id="u1", source="test", message="hi"))
-    # Either it returns the "not configured" message, or it actually worked
-    # because env is set in CI/local ??both are acceptable.
-    assert reply.text
+    assert "GOOGLE_API_KEY" in reply.text
+
+
+def test_registry_resolve_strips_prefix_even_for_default() -> None:
+    agent, payload = registry.resolve("/echo hi", default="echo")
+    assert agent.name == "echo"
+    assert payload == "hi"
+
+
+def test_registry_resolve_unknown_prefix_goes_to_default_unchanged() -> None:
+    agent, payload = registry.resolve("/nope hi", default="echo")
+    assert agent.name == "echo"
+    assert payload == "/nope hi"

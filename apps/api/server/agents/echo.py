@@ -2,7 +2,7 @@ from server.agents.base import AgentContext, AgentReply, BaseAgent
 
 
 class EchoAgent(BaseAgent):
-    """Echo agent ??verifies the pipeline end-to-end without LLM dependencies."""
+    """Echo agent: verifies the pipeline end-to-end without LLM dependencies."""
 
     name = "echo"
 

@@ -9,14 +9,14 @@ defineProps<{
 </script>
 
 <template>
-  <aside class="rounded-[1.625rem] bg-brand-sidebar p-[1.375rem] shadow-card">
-    <section :class="{ 'mb-[1.375rem]': tools?.length }">
+  <aside class="rounded-[1.625rem] bg-brand-sidebar p-[1.25rem] shadow-card">
+    <section>
       <h3
         class="m-0 mb-[0.625rem] border-b-2 border-black/10 pb-[0.375rem] text-[1.125rem] font-bold tracking-[0.06em]"
       >
         學歷
       </h3>
-      <div class="flex flex-col gap-[1.25rem]">
+      <div class="flex flex-col gap-[1rem]">
         <div
           v-for="(item, i) in education"
           :key="i"
@@ -32,29 +32,27 @@ defineProps<{
       </div>
     </section>
 
-    <section v-if="academic?.length" class="mt-[1.375rem]">
+    <section v-if="tools?.length" class="mt-[1.125rem]">
+      <h3
+        class="m-0 mb-[0.5rem] border-b-2 border-black/10 pb-[0.375rem] text-[1.125rem] font-bold tracking-[0.06em]"
+      >
+        技術工具
+      </h3>
+      <p class="m-0 text-[0.75rem] leading-[1.55] text-brand-muted">{{ tools.join('、') }}</p>
+    </section>
+
+    <section v-if="academic?.length" class="mt-[1.125rem]">
       <h3
         class="m-0 mb-[0.625rem] border-b-2 border-black/10 pb-[0.375rem] text-[1.125rem] font-bold tracking-[0.06em]"
       >
         學術研究
       </h3>
-      <div v-for="(item, i) in academic" :key="i" class="text-[0.8125rem] leading-[1.6]">
+      <div v-for="(item, i) in academic" :key="i" class="text-[0.8125rem] leading-[1.5]">
         <strong class="block text-[0.875rem]">{{ item.title }}</strong>
         <p v-for="(b, bi) in item.bullets" :key="bi" class="mt-[0.375rem] text-brand-muted">
           {{ b }}
         </p>
       </div>
-    </section>
-
-    <section v-if="tools?.length">
-      <h3
-        class="m-0 mb-[0.625rem] border-b-2 border-black/10 pb-[0.375rem] text-[1.125rem] font-bold tracking-[0.06em]"
-      >
-        技術工具
-      </h3>
-      <ul class="m-0 list-none p-0 text-[0.8125rem] leading-[1.65]">
-        <li v-for="t in tools" :key="t" class="mb-[0.25rem]">• {{ t }}</li>
-      </ul>
     </section>
   </aside>
 </template>

@@ -92,11 +92,25 @@ gcloud run services update csl-portfolio --region="$REGION" \
   --set-env-vars=APP_ENV=prod
 ```
 
+改用 Claude 當預設 Agent(金鑰同樣放 Secret Manager):
+
+```bash
+echo -n "你的-anthropic-api-key" | gcloud secrets create anthropic-api-key --data-file=-
+gcloud secrets add-iam-policy-binding anthropic-api-key \
+  --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+  --role=roles/secretmanager.secretAccessor
+
+gcloud run services update csl-portfolio --region="$REGION" \
+  --update-secrets=ANTHROPIC_API_KEY=anthropic-api-key:latest \
+  --update-env-vars=DEFAULT_AGENT=claude
+# 金鑰若沒有綁定單一 workspace,再加上 ANTHROPIC_WORKSPACE_ID=wrkspc_...
+```
+
 之後每次 GitHub Actions 部署只換 image,**env vars 與 secrets 設定會沿用**,不用重設。LINE bot 金鑰(`LINE_CHANNEL_SECRET` / `LINE_CHANNEL_ACCESS_TOKEN`)之後要用同樣方式掛。
 
 ## 尚未完成 / 注意事項
 
-- **repo 還不是 git repository**:需要先 `git init`、建 GitHub repo 並 push,workflow 才會動。注意專案在 Google Drive 上,`node_modules/` 等已在 `.gitignore`。
+- 對話歷史與限流計數都存在程序記憶體,所以 workflow 固定 `--max-instances=1`;重啟或重新部署後會清空。上線前也請到 Anthropic Console 設定月花費上限。
 - Cloud Run 檔案系統是暫時性的——知識庫資料不能存本機 SQLite/檔案,簡易版先把知識文件打包進 image,動態編輯需求出現時再上 Firestore。
 - 費用:scale to zero + 免費額度,個人站正常流量下應為 $0。
 - 本機驗證 image:`docker build -t csl-portfolio . && docker run -p 8080:8080 -e GOOGLE_API_KEY=... csl-portfolio`,瀏覽 `http://localhost:8080`。

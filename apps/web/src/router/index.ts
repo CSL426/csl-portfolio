@@ -20,6 +20,12 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '履歷 ATS 版' },
   },
   {
+    path: '/projects',
+    name: 'projects',
+    component: () => import('@/pages/ProjectsPage.vue'),
+    meta: { title: '專案' },
+  },
+  {
     path: '/agents',
     name: 'agents',
     component: () => import('@/pages/AgentsPage.vue'),
@@ -35,7 +41,8 @@ const routes: RouteRecordRaw[] = [
 export const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior() {
+  scrollBehavior(to) {
+    if (to.hash) return { el: to.hash, top: 80 }
     return { top: 0 }
   },
 })
