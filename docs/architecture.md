@@ -74,6 +74,8 @@ class BaseAgent(ABC):
 
 **網頁 session**:訪客身分來自伺服器簽發的 HttpOnly cookie(`portfolio_session`),不接受前端傳 `user_id`。`DELETE /api/chat/session` 會清掉該訪客在所有 Agent 的對話。`/api/chat` 依 session、IP 與全站每日上限限流(`CHAT_LIMIT_*`),超過回 429。
 
+**助理提示詞**:網頁與 LINE 的助理都用 `server/core/assistant_prompt.py` 組出的系統提示,內容來自 `server/core/site_profile.json`。這個檔案由 `apps/web/src/data/*.ts` 產生,改了文案要跑 `pnpm update:profile`,否則測試會失敗。Claude 的回覆在輸出前會把 Big5 編不出來的簡體字轉成繁體。
+
 新增一個 Agent:
 
 ```python

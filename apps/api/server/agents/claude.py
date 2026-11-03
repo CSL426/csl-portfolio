@@ -22,6 +22,7 @@ from typing import TYPE_CHECKING, Final, cast
 from server.agents.base import AgentContext, AgentReply, BaseAgent
 from server.core.config import get_settings
 from server.core.logging import get_logger
+from server.core.text import to_traditional
 
 if TYPE_CHECKING:
     from anthropic import AsyncAnthropic
@@ -153,7 +154,8 @@ class ClaudeAgent(BaseAgent):
             assistant = cast("MessageParam", {"role": "assistant", "content": response.content})
             session.history = [*messages, assistant]
 
-        text = "".join(b.text for b in response.content if b.type == "text").strip()
+        # Only the visible text changes: history above must replay the blocks as returned.
+        text = to_traditional("".join(b.text for b in response.content if b.type == "text").strip())
         return AgentReply(
             text=text or "（模型沒有回覆內容）",
             extra={"model": response.model},

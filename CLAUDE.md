@@ -26,6 +26,7 @@ pnpm dev:web / pnpm dev:api  # Vite on 5173 proxies /api → uvicorn on 8000
 pnpm check                   # type-check + lint:web + test:web + lint:api + typecheck:api + test:api
 pnpm build:web               # vue-tsc -b && vite build
 pnpm typecheck:api           # mypy --strict
+pnpm update:profile          # after editing data/*.ts: regenerate the chat assistant's profile
 ```
 
 Run `pnpm check` before committing. CI (`.github/workflows/ci.yml`) runs the same

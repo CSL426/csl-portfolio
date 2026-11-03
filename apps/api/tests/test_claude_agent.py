@@ -168,3 +168,13 @@ def test_claude_client_bounds_the_wait_for_line(monkeypatch: pytest.MonkeyPatch)
     assert client is not None
     assert client.timeout == 15.0
     assert client.max_retries == 1
+
+
+@pytest.mark.asyncio
+async def test_claude_reply_is_converted_but_history_is_not() -> None:
+    first = _Response([_Block("text", "对话")])
+    agent, messages = _agent([first, _Response([_Block("text", "ok")])])
+    reply = await agent.handle(_ctx("one"))
+    assert reply.text == "對話"
+    await agent.handle(_ctx("two"))
+    assert messages.calls[1]["messages"][1]["content"] == first.content

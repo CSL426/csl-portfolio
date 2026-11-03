@@ -5,6 +5,8 @@ from typing import Literal
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from server.core.assistant_prompt import build_assistant_instruction
+
 # Walk up from this file (server/core/config.py) to find env files.
 # pydantic-settings reads tuples in order; later entries override earlier ones —
 # so local `apps/api/.env` wins over root `.env` if both exist.
@@ -14,11 +16,7 @@ _API_DIR = Path(__file__).resolve().parents[2]
 _REPO_ROOT = _API_DIR.parents[1] if len(_API_DIR.parents) > 1 else _API_DIR
 _ENV_FILES = (_REPO_ROOT / ".env", _API_DIR / ".env")
 
-_ASSISTANT_INSTRUCTION = (
-    "You are Spark, the AI assistant on Liao Chi-Shun's portfolio site. "
-    "Be concise, friendly, and bilingual (Traditional Chinese + English). "
-    "When asked about Spark's background, defer to the resume on the site."
-)
+_ASSISTANT_INSTRUCTION = build_assistant_instruction()
 
 
 class Settings(BaseSettings):

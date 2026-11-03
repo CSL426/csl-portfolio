@@ -18,6 +18,7 @@
     "lint:api": "uv run --project apps/api ruff check",
     "format:api": "uv run --project apps/api ruff format",
     "typecheck:api": "uv run --project apps/api --directory apps/api mypy",
+    "update:profile": "pnpm --filter @spark/web exec vitest run -u",
     "check": "pnpm type-check && pnpm lint:web && pnpm test:web && pnpm lint:api && pnpm typecheck:api && pnpm test:api"
   }
 }
