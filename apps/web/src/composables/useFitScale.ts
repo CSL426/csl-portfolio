@@ -13,7 +13,9 @@ export function useFitScale(sheetWidthPx = A4_WIDTH_PX, gutterPx = 32) {
 
   function update() {
     if (typeof window === 'undefined') return
-    scale.value = Math.min(1, (window.innerWidth - gutterPx) / sheetWidthPx)
+    // Not innerWidth: mobile browsers grow it to fit overflowing content.
+    const viewportWidth = document.documentElement.clientWidth
+    scale.value = Math.min(1, (viewportWidth - gutterPx) / sheetWidthPx)
   }
 
   onMounted(() => {
