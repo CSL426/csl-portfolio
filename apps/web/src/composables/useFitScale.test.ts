@@ -24,8 +24,12 @@ describe('useFitScale', () => {
   })
 
   it('never scales above full size', () => {
-    stubViewport(1280, 1280)
+    stubViewport(390, 390)
     const { scale, update } = useFitScale()
+    update()
+    expect(scale.value).toBeLessThan(1)
+
+    stubViewport(1280, 1280)
     update()
     expect(scale.value).toBe(1)
   })
