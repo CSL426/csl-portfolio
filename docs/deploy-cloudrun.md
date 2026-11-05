@@ -110,6 +110,12 @@ gcloud run services update csl-portfolio --region="$REGION" \
 
 ## 尚未完成 / 注意事項
 
+- 部署成功且健康檢查通過後,workflow 只留接流量的 revision 與它用的映像,其他都刪掉,所以沒有一鍵回滾;要退版就 revert 後重新部署。刪映像需要部署帳號在 `containers` 映像庫有 `roles/artifactregistry.repoAdmin`:
+
+  ```bash
+  gcloud artifacts repositories add-iam-policy-binding containers --project="$PROJECT_ID" --location="$REGION" \n    --member="serviceAccount:github-deployer@${PROJECT_ID}.iam.gserviceaccount.com" \n    --role=roles/artifactregistry.repoAdmin
+  ```
+
 - 對話歷史與限流計數都存在程序記憶體,所以 workflow 固定 `--max-instances=1`;重啟或重新部署後會清空。上線前也請到 Anthropic Console 設定月花費上限。
 - Cloud Run 檔案系統是暫時性的——知識庫資料不能存本機 SQLite/檔案,簡易版先把知識文件打包進 image,動態編輯需求出現時再上 Firestore。
 - 費用:scale to zero + 免費額度,個人站正常流量下應為 $0。
