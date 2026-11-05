@@ -5,6 +5,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# One deploy at a time: cleanup must not race a revision that is still rolling out.
+concurrency:
+  group: deploy-cloud-run
+  cancel-in-progress: false
+
 env:
   REGION: asia-east1
   SERVICE: csl-portfolio
@@ -50,3 +55,57 @@ jobs:
 
       - name: Show deployed URL
         run: echo "Deployed to ${{ steps.deploy.outputs.url }}"
+
+      - name: Health check
+        run: curl --fail --retry 5 --retry-delay 10 --retry-all-errors "${{ steps.deploy.outputs.url }}/api/health"
+
+      # Keep only the revision serving traffic and its image. A failure here
+      # must not fail the deploy that already succeeded.
+      - name: Clean up old revisions and images
+        continue-on-error: true
+        shell: bash
+        env:
+          PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+        run: |
+          REPO="${REGION}-docker.pkg.dev/${PROJECT}/${AR_REPO}/${SERVICE}"
+          RUN_ARGS=(--region "$REGION" --project "$PROJECT")
+
+          SERVING=$(gcloud run services describe "$SERVICE" "${RUN_ARGS[@]}" --format=json \
+            | jq -r '.status.traffic[].revisionName // empty')
+          # An empty list here would delete the live revision too.
+          [ -n "$SERVING" ] || { echo "no serving revisions found; skip cleanup"; exit 1; }
+          for rev in $(gcloud run revisions list --service "$SERVICE" "${RUN_ARGS[@]}" --format='value(metadata.name)'); do
+            if ! grep -qx "$rev" <<<"$SERVING"; then
+              echo "delete revision $rev"
+              gcloud run revisions delete "$rev" "${RUN_ARGS[@]}" --quiet
+            fi
+          done
+
+          RUNNING=$(gcloud run revisions list --service "$SERVICE" "${RUN_ARGS[@]}" --format=json \
+            | jq -r '.[].status.imageDigest // empty | split("@")[1]')
+          IMAGES=$(gcloud artifacts docker images list "$REPO" --project "$PROJECT" --format=json)
+          # Stop if what is running cannot be found, rather than guess and delete it.
+          [ -n "$RUNNING" ] || { echo "no running image digests; skip image cleanup"; exit 1; }
+          for digest in $RUNNING; do
+            jq -e --arg d "$digest" 'any(.[]; .version == $d)' <<<"$IMAGES" >/dev/null \
+              || { echo "running image $digest not in repository; skip image cleanup"; exit 1; }
+          done
+
+          # docker build pushes a tagged index with an untagged platform image and
+          # attestation, and Cloud Run records the platform image's digest. Keep the
+          # whole set: any index that contains a running image, plus its children.
+          KEEP="$RUNNING"
+          for index in $(jq -r '.[] | select(.metadata.mediaType | test("index|list")) | .version' <<<"$IMAGES"); do
+            CHILDREN=$(docker buildx imagetools inspect --raw "${REPO}@${index}" | jq -r '.manifests[]?.digest')
+            if grep -qxFf <(printf '%s\n' "$RUNNING") <<<"$CHILDREN"; then
+              KEEP=$(printf '%s\n%s\n%s\n' "$KEEP" "$index" "$CHILDREN")
+            fi
+          done
+
+          # Indexes first: their children cannot go while something still references them.
+          for digest in $(jq -r 'sort_by(.metadata.mediaType | test("index|list") | not) | .[].version' <<<"$IMAGES"); do
+            if ! grep -qx "$digest" <<<"$KEEP"; then
+              echo "delete image $digest"
+              gcloud artifacts docker images delete "${REPO}@${digest}" --project "$PROJECT" --delete-tags --quiet
+            fi
+          done
