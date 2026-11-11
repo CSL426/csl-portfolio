@@ -9,12 +9,19 @@ class AgentRegistry:
 
     def __init__(self) -> None:
         self._agents: dict[str, BaseAgent] = {}
+        self._aliases: dict[str, str] = {}
 
-    def register(self, agent: BaseAgent) -> None:
+    def register(self, agent: BaseAgent, aliases: tuple[str, ...] = ()) -> None:
         self._agents[agent.name] = agent
+        for alias in aliases:
+            self._aliases[alias] = agent.name
 
     def get(self, name: str) -> BaseAgent | None:
-        return self._agents.get(name)
+        return self._agents.get(self.canonical(name))
+
+    def canonical(self, name: str) -> str:
+        """The registered name for `name`, which may be an alias."""
+        return self._aliases.get(name, name)
 
     def names(self) -> list[str]:
         return sorted(self._agents.keys())
@@ -27,8 +34,9 @@ class AgentRegistry:
           "/echo hello"   -> echo agent, message "hello"
           "hi"            -> default agent, message "hi"
         """
-        agent = self.get(self._parse_prefix(message) or default) or self._agents[default]
-        return agent
+        prefix = self._parse_prefix(message)
+        agent = (self.get(prefix) if prefix else None) or self.get(default)
+        return agent or self._agents[default]
 
     def resolve(self, message: str, default: str) -> tuple[BaseAgent, str]:
         """Pick the agent for a raw message and return it with the payload.
@@ -62,5 +70,6 @@ class AgentRegistry:
 
 registry = AgentRegistry()
 registry.register(EchoAgent())
-registry.register(GoogleADKAgent())
+# `/adk` was the old command; keep it working for anyone who learned it.
+registry.register(GoogleADKAgent(), aliases=("adk",))
 registry.register(ClaudeAgent())

@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   web:
-    name: Web (type-check, lint, test, build)
+    name: Web (type-check, lint, test, build, e2e)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,6 +29,8 @@ jobs:
       - run: pnpm lint:web
       - run: pnpm test:web
       - run: pnpm build:web
+      - run: pnpm --filter @spark/web exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
 
   api:
     name: API (ruff, mypy, pytest)

@@ -13,6 +13,7 @@
     "type-check": "pnpm --filter @spark/web type-check",
     "lint:web": "pnpm --filter @spark/web lint",
     "test:web": "pnpm --filter @spark/web test",
+    "test:e2e": "pnpm --filter @spark/web test:e2e",
     "dev:api": "uv run --project apps/api uvicorn server.main:app --reload --port 8000",
     "test:api": "uv run --project apps/api pytest",
     "lint:api": "uv run --project apps/api ruff check",

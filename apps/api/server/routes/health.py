@@ -18,5 +18,5 @@ async def health() -> dict[str, Any]:
         "env": settings.app_env,
         "line_configured": settings.line_configured,
         "agents": registry.names(),
-        "default_agent": settings.default_agent,
+        "default_agent": registry.canonical(settings.default_agent),
     }
