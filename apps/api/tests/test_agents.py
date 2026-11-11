@@ -15,12 +15,13 @@ async def test_echo_agent_echoes_message() -> None:
 def test_registry_has_expected_agents() -> None:
     names = registry.names()
     assert "echo" in names
-    assert "adk" in names
+    assert "gemini" in names
+    assert "adk" not in names  # an alias, not a separate agent
     assert "claude" in names
 
 
 def test_registry_route_with_prefix() -> None:
-    agent = registry.route("/echo ping", default="adk")
+    agent = registry.route("/echo ping", default="gemini")
     assert agent.name == "echo"
 
 
@@ -56,3 +57,9 @@ def test_registry_resolve_unknown_prefix_goes_to_default_unchanged() -> None:
     agent, payload = registry.resolve("/nope hi", default="echo")
     assert agent.name == "echo"
     assert payload == "/nope hi"
+
+
+def test_registry_old_adk_command_still_selects_gemini() -> None:
+    agent, payload = registry.resolve("/adk hi", default="echo")
+    assert agent.name == "gemini"
+    assert payload == "hi"

@@ -22,7 +22,7 @@ logger = get_logger(__name__)
 
 
 class GoogleADKAgent(BaseAgent):
-    name = "adk"
+    name = "gemini"
 
     def __init__(self) -> None:
         self.settings = get_settings()

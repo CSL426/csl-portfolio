@@ -9,12 +9,15 @@ class AgentRegistry:
 
     def __init__(self) -> None:
         self._agents: dict[str, BaseAgent] = {}
+        self._aliases: dict[str, str] = {}
 
-    def register(self, agent: BaseAgent) -> None:
+    def register(self, agent: BaseAgent, aliases: tuple[str, ...] = ()) -> None:
         self._agents[agent.name] = agent
+        for alias in aliases:
+            self._aliases[alias] = agent.name
 
     def get(self, name: str) -> BaseAgent | None:
-        return self._agents.get(name)
+        return self._agents.get(self._aliases.get(name, name))
 
     def names(self) -> list[str]:
         return sorted(self._agents.keys())
@@ -62,5 +65,6 @@ class AgentRegistry:
 
 registry = AgentRegistry()
 registry.register(EchoAgent())
-registry.register(GoogleADKAgent())
+# `/adk` was the old command; keep it working for anyone who learned it.
+registry.register(GoogleADKAgent(), aliases=("adk",))
 registry.register(ClaudeAgent())
