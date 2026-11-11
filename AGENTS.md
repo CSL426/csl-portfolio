@@ -25,7 +25,7 @@ uv sync --project apps/api   # api deps
 pnpm dev:web / pnpm dev:api  # Vite on 5173 proxies /api → uvicorn on 8000
 pnpm check                   # type-check + lint:web + test:web + lint:api + typecheck:api + test:api
 pnpm build:web               # vue-tsc -b && vite build
-pnpm test:e2e                # Playwright on the built site (build first); CI runs it too
+pnpm test:e2e                # Playwright on the built site (build first); locally uses installed Chrome, CI uses Chromium
 pnpm typecheck:api           # mypy --strict
 pnpm update:profile          # after editing data/*.ts: regenerate the chat assistant's profile
 ```

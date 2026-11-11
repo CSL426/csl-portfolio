@@ -11,7 +11,7 @@ interface ChatMock {
 async function mockChat(page: Page): Promise<ChatMock> {
   const mock: ChatMock = { posts: [], deletes: 0, statuses: [], delayMs: 300 }
   await page.route('**/api/chat/session', async (route) => {
-    mock.deletes += 1
+    if (route.request().method() === 'DELETE') mock.deletes += 1
     await route.fulfill({ status: 204 })
   })
   await page.route('**/api/chat', async (route) => {

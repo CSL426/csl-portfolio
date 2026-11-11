@@ -17,7 +17,11 @@ class AgentRegistry:
             self._aliases[alias] = agent.name
 
     def get(self, name: str) -> BaseAgent | None:
-        return self._agents.get(self._aliases.get(name, name))
+        return self._agents.get(self.canonical(name))
+
+    def canonical(self, name: str) -> str:
+        """The registered name for `name`, which may be an alias."""
+        return self._aliases.get(name, name)
 
     def names(self) -> list[str]:
         return sorted(self._agents.keys())
@@ -30,8 +34,9 @@ class AgentRegistry:
           "/echo hello"   -> echo agent, message "hello"
           "hi"            -> default agent, message "hi"
         """
-        agent = self.get(self._parse_prefix(message) or default) or self._agents[default]
-        return agent
+        prefix = self._parse_prefix(message)
+        agent = (self.get(prefix) if prefix else None) or self.get(default)
+        return agent or self._agents[default]
 
     def resolve(self, message: str, default: str) -> tuple[BaseAgent, str]:
         """Pick the agent for a raw message and return it with the payload.

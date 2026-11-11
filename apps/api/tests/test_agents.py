@@ -63,3 +63,9 @@ def test_registry_old_adk_command_still_selects_gemini() -> None:
     agent, payload = registry.resolve("/adk hi", default="echo")
     assert agent.name == "gemini"
     assert payload == "hi"
+
+
+def test_registry_route_falls_back_to_an_aliased_default() -> None:
+    # DEFAULT_AGENT=adk must keep working after the rename to gemini.
+    assert registry.route("/nope hi", default="adk").name == "gemini"
+    assert registry.canonical("adk") == "gemini"

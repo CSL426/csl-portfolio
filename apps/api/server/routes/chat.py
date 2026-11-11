@@ -112,4 +112,4 @@ async def reset_session(request: Request) -> None:
 
 @router.get("/agents")
 async def list_agents() -> dict[str, Any]:
-    return {"agents": registry.names(), "default": get_settings().default_agent}
+    return {"agents": registry.names(), "default": registry.canonical(get_settings().default_agent)}
