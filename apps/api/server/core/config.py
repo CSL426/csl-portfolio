@@ -27,7 +27,8 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_env: str = Field(default="dev", description="dev | prod")
+    # Anything else fails at startup, so a typo cannot quietly switch off JSON logs.
+    app_env: Literal["dev", "prod"] = Field(default="dev")
     log_level: str = Field(default="INFO")
 
     # Set in the Cloud Run image (STATIC_DIR); unset in local dev where Vite serves the SPA.

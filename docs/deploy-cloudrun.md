@@ -88,8 +88,8 @@ gcloud secrets add-iam-policy-binding google-api-key \
   --role=roles/secretmanager.secretAccessor
 
 gcloud run services update csl-portfolio --region="$REGION" \
-  --set-secrets=GOOGLE_API_KEY=google-api-key:latest \
-  --set-env-vars=APP_ENV=prod
+  --update-secrets=GOOGLE_API_KEY=google-api-key:latest \
+  --update-env-vars=APP_ENV=prod
 ```
 
 改用 Claude 當預設 Agent(金鑰同樣放 Secret Manager):
@@ -105,6 +105,8 @@ gcloud run services update csl-portfolio --region="$REGION" \
   --update-env-vars=DEFAULT_AGENT=claude
 # 金鑰若沒有綁定單一 workspace,再加上 ANTHROPIC_WORKSPACE_ID=wrkspc_...
 ```
+
+用 `--update-*` 而不是 `--set-*`:`--set-env-vars` / `--set-secrets` 會把沒列到的變數全部清掉。`APP_ENV=prod` 讓 log 改成一行一筆 JSON,Cloud Logging 才能依欄位與嚴重程度篩選。
 
 之後每次 GitHub Actions 部署只換 image,**env vars 與 secrets 設定會沿用**,不用重設。LINE bot 金鑰(`LINE_CHANNEL_SECRET` / `LINE_CHANNEL_ACCESS_TOKEN`)之後要用同樣方式掛。
 
