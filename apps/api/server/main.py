@@ -15,7 +15,7 @@ from server.routes import chat, health, webhook
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
-    configure_logging(settings.log_level)
+    configure_logging(settings.log_level, json_logs=settings.app_env == "prod")
     logger = get_logger("server.routes")
     logger.info(
         "api_starting",
