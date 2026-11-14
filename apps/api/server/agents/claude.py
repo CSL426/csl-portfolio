@@ -105,7 +105,9 @@ class ClaudeAgent(BaseAgent):
     async def handle(self, ctx: AgentContext) -> AgentReply:
         client = self._ensure_client()
         if client is None:
-            return AgentReply(text="（Claude 尚未設定：請在 .env 填入 ANTHROPIC_API_KEY）")
+            # Visitors see this, so keep setup details in the log.
+            logger.error("claude_not_configured", hint="set ANTHROPIC_API_KEY")
+            return AgentReply(text="（Claude 目前無法使用，請稍後再試）")
 
         import anthropic
 
@@ -125,13 +127,24 @@ class ClaudeAgent(BaseAgent):
                 response = await client.messages.create(
                     model=self.settings.claude_model,
                     max_tokens=self.settings.claude_max_tokens,
-                    system=self.settings.claude_instruction,
+                    # Its own breakpoint lets every visitor share the system prompt;
+                    # the automatic one below only records the end of each conversation.
+                    system=[
+                        {
+                            "type": "text",
+                            "text": self.settings.claude_instruction,
+                            "cache_control": {"type": "ephemeral"},
+                        }
+                    ],
                     messages=messages,
                     output_config={"effort": self.settings.claude_effort},
+                    # Caches up to the last block, so a visitor's earlier turns are reused
+                    # on the next one. Five minutes; a one-hour write costs twice as much.
+                    cache_control={"type": "ephemeral"},
                 )
             except anthropic.AuthenticationError:
                 logger.error("claude_auth_failed", session_id=session_id)
-                return AgentReply(text="（Claude 金鑰無效，請檢查 ANTHROPIC_API_KEY）")
+                return AgentReply(text="（Claude 目前無法使用，請稍後再試）")
             except anthropic.RateLimitError:
                 logger.warning("claude_rate_limited", session_id=session_id)
                 return AgentReply(text="（Claude 目前請求過多，請稍後再試）")
@@ -142,6 +155,16 @@ class ClaudeAgent(BaseAgent):
                 # APITimeoutError is a subclass, so timeouts end up here too.
                 logger.exception("claude_connection_error", session_id=session_id)
                 return AgentReply(text="（無法連線到 Claude，請稍後再試）")
+
+            usage = response.usage
+            logger.info(
+                "claude_usage",
+                session_id=session_id,
+                input_tokens=usage.input_tokens,
+                output_tokens=usage.output_tokens,
+                cache_read=usage.cache_read_input_tokens or 0,
+                cache_write=usage.cache_creation_input_tokens or 0,
+            )
 
             if response.stop_reason == "refusal":
                 category = response.stop_details.category if response.stop_details else None

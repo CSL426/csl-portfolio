@@ -36,6 +36,12 @@ const messageList = (page: Page) => page.locator('.overflow-y-auto')
 const isFocused = (page: Page) =>
   chatInput(page).evaluate((el) => el === document.activeElement)
 
+test('Gemini is marked as not yet available', async ({ page }) => {
+  await page.goto('/agents')
+  const card = page.locator('li').filter({ has: page.getByRole('heading', { name: 'Gemini' }) })
+  await expect(card.getByText('SOON')).toBeVisible()
+})
+
 test.describe('chat', () => {
   test('keeps focus so messages can be sent with Enter only', async ({ page }) => {
     const mock = await mockChat(page)

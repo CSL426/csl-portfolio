@@ -24,10 +24,19 @@ class _StopDetails:
 
 
 @dataclass
+class _Usage:
+    input_tokens: int = 10
+    output_tokens: int = 5
+    cache_read_input_tokens: int | None = None
+    cache_creation_input_tokens: int | None = None
+
+
+@dataclass
 class _Response:
     content: list[_Block]
     stop_reason: str = "end_turn"
     stop_details: _StopDetails | None = None
+    usage: _Usage = field(default_factory=_Usage)
     model: str = "claude-haiku-5-5"
 
 
@@ -63,7 +72,8 @@ async def test_claude_unconfigured_returns_friendly_message(
     agent = ClaudeAgent()
     monkeypatch.setattr(agent.settings, "anthropic_api_key", None)
     reply = await agent.handle(_ctx("hi"))
-    assert "ANTHROPIC_API_KEY" in reply.text
+    assert "無法使用" in reply.text
+    assert "ANTHROPIC_API_KEY" not in reply.text
 
 
 @pytest.mark.asyncio
@@ -75,6 +85,10 @@ async def test_claude_sends_effort_and_no_fallbacks() -> None:
     # Haiku has no server-side fallback, so these must not be sent.
     assert "fallbacks" not in call
     assert "betas" not in call
+    assert call["cache_control"] == {"type": "ephemeral"}
+    # The system prompt needs its own breakpoint to be shared across visitors.
+    assert call["system"][0]["cache_control"] == {"type": "ephemeral"}
+    assert call["system"][0]["text"] == agent.settings.claude_instruction
     assert call["output_config"] == {"effort": agent.settings.claude_effort}
 
 
