@@ -3,6 +3,9 @@ name: Deploy to Cloud Run
 on:
   push:
     branches: [main]
+    # A docs-only push changes nothing in the image; no code reads .md at runtime.
+    paths-ignore:
+      - "**.md"
   workflow_dispatch:
 
 # One deploy at a time: cleanup must not race a revision that is still rolling out.
@@ -39,7 +42,9 @@ jobs:
       - name: Build and push image
         run: |
           IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.SERVICE }}:${GITHUB_SHA::7}"
-          docker build -t "$IMAGE" .
+          # One plain manifest per deploy: without these, buildx pushes an index plus
+          # an attestation, and cleanup has to work out which pieces belong together.
+          docker build --provenance=false --sbom=false -t "$IMAGE" .
           docker push "$IMAGE"
           echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
 
@@ -91,18 +96,10 @@ jobs:
               || { echo "running image $digest not in repository; skip image cleanup"; exit 1; }
           done
 
-          # docker build pushes a tagged index with an untagged platform image and
-          # attestation, and Cloud Run records the platform image's digest. Keep the
-          # whole set: any index that contains a running image, plus its children.
           KEEP="$RUNNING"
-          for index in $(jq -r '.[] | select(.metadata.mediaType | test("index|list")) | .version' <<<"$IMAGES"); do
-            CHILDREN=$(docker buildx imagetools inspect --raw "${REPO}@${index}" | jq -r '.manifests[]?.digest')
-            if grep -qxFf <(printf '%s\n' "$RUNNING") <<<"$CHILDREN"; then
-              KEEP=$(printf '%s\n%s\n%s\n' "$KEEP" "$index" "$CHILDREN")
-            fi
-          done
 
-          # Indexes first: their children cannot go while something still references them.
+          # Indexes first, for images built before --provenance=false: their children
+          # cannot go while the index still references them.
           for digest in $(jq -r 'sort_by(.metadata.mediaType | test("index|list") | not) | .[].version' <<<"$IMAGES"); do
             if ! grep -qx "$digest" <<<"$KEEP"; then
               echo "delete image $digest"
