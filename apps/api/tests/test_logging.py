@@ -34,3 +34,12 @@ def test_terminal_logs_stay_readable_by_default(capsys: pytest.CaptureFixture[st
     assert "hello" in out
     with pytest.raises(json.JSONDecodeError):
         json.loads(out.strip().splitlines()[-1])
+
+
+def test_unknown_app_env_fails_fast(monkeypatch: pytest.MonkeyPatch) -> None:
+    from pydantic import ValidationError
+    from server.core.config import Settings
+
+    monkeypatch.setenv("APP_ENV", "production")
+    with pytest.raises(ValidationError):
+        Settings()
