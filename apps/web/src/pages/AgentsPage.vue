@@ -13,7 +13,7 @@ const agents: AgentPreview[] = [
   {
     name: 'Gemini',
     desc: 'Google Gemini 3.5 Flash-Lite，輕量快速的對話模型。',
-    status: 'live',
+    status: 'coming-soon',
   },
   {
     name: 'Claude',
@@ -107,7 +107,7 @@ async function onSend() {
       >
         <template v-if="!messages.length">
           <p class="text-center text-[0.875rem] text-brand-muted">
-            輸入訊息開始對話。提示：用 <code>/claude</code>、<code>/gemini</code> 或 <code>/echo</code> 開頭切換 Agent。
+            輸入訊息開始對話。提示：用 <code>/claude</code> 或 <code>/echo</code> 開頭切換 Agent。
           </p>
           <div class="mt-[0.75rem] flex flex-wrap justify-center gap-[0.5rem]">
             <button

@@ -83,8 +83,10 @@ class GoogleADKAgent(BaseAgent):
 
     async def handle(self, ctx: AgentContext) -> AgentReply:
         if not self._ensure_runner():
+            # Visitors see the reply, so keep setup details in the log.
+            logger.warning("adk_not_configured", hint="set GOOGLE_API_KEY")
             return AgentReply(
-                text="（Google ADK 尚未設定：請在 apps/api/.env 填入 GOOGLE_API_KEY）",
+                text="（Gemini 目前未開放，請改用 /claude）",
             )
         assert self._runner is not None
 

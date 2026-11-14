@@ -44,7 +44,8 @@ async def test_adk_agent_unconfigured_returns_friendly_message(
     agent = GoogleADKAgent()
     monkeypatch.setattr(agent.settings, "google_api_key", None)
     reply = await agent.handle(AgentContext(user_id="u1", source="test", message="hi"))
-    assert "GOOGLE_API_KEY" in reply.text
+    assert "未開放" in reply.text
+    assert "GOOGLE_API_KEY" not in reply.text
 
 
 def test_registry_resolve_strips_prefix_even_for_default() -> None:
