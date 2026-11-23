@@ -173,16 +173,46 @@ test.describe('phone', () => {
   })
 
   for (const path of ['/', '/resume', '/resume/ats', '/projects', '/agents']) {
-    test(`${path} has no sideways scroll`, async ({ page }) => {
+    test(`${path} keeps every element on screen`, async ({ page }) => {
       await page.goto(path)
       await page.waitForLoadState('networkidle')
-      const [scrollWidth, clientWidth] = await page.evaluate(() => [
-        document.documentElement.scrollWidth,
-        document.documentElement.clientWidth,
-      ])
-      expect(scrollWidth).toBeLessThanOrEqual(clientWidth)
+      // The page sets overflow-x: clip, so scrollWidth no longer reveals overflow:
+      // it would be cut off silently. Check each element's box instead, skipping
+      // content inside a container that scrolls or clips on purpose.
+      const offscreen = await page.evaluate(() => {
+        const vw = document.documentElement.clientWidth
+        const clippedByAncestor = (el: Element) => {
+          for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+            if (getComputedStyle(p).overflowX !== 'visible') return true
+          }
+          return false
+        }
+        return [...document.querySelectorAll('body *')]
+          .filter((el) => {
+            const box = el.getBoundingClientRect()
+            return box.width > 0 && (box.right > vw + 1 || box.left < -1) && !clippedByAncestor(el)
+          })
+          .map((el) => `${el.tagName}.${String(el.className).slice(0, 40)}`)
+      })
+      expect(offscreen).toEqual([])
     })
   }
+
+  test('every nav link stays reachable with larger text', async ({ page }) => {
+    await page.goto('/agents')
+    // Same as a browser text-size setting of about 150 %.
+    await page.evaluate(() => {
+      document.documentElement.style.fontSize = '150%'
+    })
+    const vw = await page.evaluate(() => document.documentElement.clientWidth)
+    for (const label of ['Home', 'Resume', 'Projects', 'Agents']) {
+      const link = page.locator('nav').getByRole('link', { name: label, exact: true })
+      await link.scrollIntoViewIfNeeded()
+      const box = (await link.boundingBox())!
+      expect(box.x).toBeGreaterThanOrEqual(0)
+      expect(box.x + box.width).toBeLessThanOrEqual(vw)
+    }
+  })
 })
 
 test.describe('navigation and downloads', () => {

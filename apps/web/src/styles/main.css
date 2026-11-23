@@ -1,3 +1,5 @@
+@import './tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,16 +10,38 @@
   }
   html,
   body {
-    @apply bg-brand-page text-brand-ink antialiased;
-    font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', 'Segoe UI', sans-serif;
+    /* clip, not hidden: hidden creates a scroll container and breaks sticky. */
+    overflow-x: clip;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   #app {
     min-height: 100vh;
+  }
+  h1,
+  h2,
+  h3 {
+    font-style: normal;
+  }
+  /* Instant ring: never transition its appearance. */
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
   }
 }
 
 @layer components {
   .resume-page {
+    /* Pinned to the pre-redesign ink: the sheets must match the PDF, and html2canvas
+       (PNG/PDF export) cannot parse the oklch() colour the page body now inherits. */
+    color: theme('colors.brand.ink');
     width: 210mm;
     min-height: 297mm;
     background: #fff;
@@ -32,6 +56,19 @@
     margin: 0 auto;
     padding-top: 12mm;
     padding-bottom: 12mm;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .active\:translate-y-px:active {
+    transform: none !important;
   }
 }
 
