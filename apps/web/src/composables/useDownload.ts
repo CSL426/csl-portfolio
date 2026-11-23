@@ -17,6 +17,9 @@ export function toRgb(color: string): string {
   return `rgba(${r}, ${g}, ${b}, ${a / 255})`
 }
 
+let rgbBackgroundUsers = 0
+let savedBackgrounds: string[] = []
+
 /**
  * html2canvas 1.x always parses the <html> and <body> backgrounds, whatever node
  * it captures, and throws on oklch(). Swap in the same colour as rgba() while it
@@ -24,14 +27,26 @@ export function toRgb(color: string): string {
  */
 export function withRgbPageBackground(): () => void {
   const targets = [document.documentElement, document.body]
-  const previous = targets.map((el) => el.style.backgroundColor)
-  targets.forEach((el) => {
-    el.style.backgroundColor = toRgb(getComputedStyle(el).backgroundColor)
-  })
-  return () => {
-    targets.forEach((el, i) => {
-      el.style.backgroundColor = previous[i]
+  // Exports can overlap (a failed jsPDF import releases the buttons while a capture
+  // still runs). Only the first one saves the page's own values and only the last
+  // one restores them, so a nested call cannot save and later restore the rgba swap.
+  if (rgbBackgroundUsers === 0) {
+    savedBackgrounds = targets.map((el) => el.style.backgroundColor)
+    targets.forEach((el) => {
+      el.style.backgroundColor = toRgb(getComputedStyle(el).backgroundColor)
     })
+  }
+  rgbBackgroundUsers += 1
+  let released = false
+  return () => {
+    if (released) return
+    released = true
+    rgbBackgroundUsers -= 1
+    if (rgbBackgroundUsers === 0) {
+      targets.forEach((el, i) => {
+        el.style.backgroundColor = savedBackgrounds[i]
+      })
+    }
   }
 }
 

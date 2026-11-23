@@ -23,7 +23,7 @@ function isActive(to: string): boolean {
     <!-- N5 floating pill: content-sized and detached from the edges. -->
     <nav
       aria-label="主要導覽"
-      class="flex min-w-0 max-w-[min(44rem,100%)] items-center gap-[0.5rem] rounded-full border border-rule bg-paper-2 py-[0.3125rem] pl-[0.875rem] pr-[0.3125rem] narrow:gap-[0.25rem] narrow:pl-[0.625rem] narrow:pr-[0.25rem] shadow-[0_0.5rem_1.5rem_-0.75rem_var(--color-shadow)] sm:gap-[1.5rem] sm:pl-[1.125rem]"
+      class="flex min-w-0 max-w-[min(44rem,100%)] items-center gap-[0.5rem] rounded-full border border-rule bg-paper-2 py-[0.0625rem] pl-[0.875rem] pr-[0.0625rem] narrow:gap-[0.25rem] narrow:pl-[0.625rem] narrow:pr-[0.25rem] shadow-[0_0.5rem_1.5rem_-0.75rem_var(--color-shadow)] sm:gap-[1.5rem] sm:pl-[1.125rem]"
     >
       <RouterLink
         to="/"
@@ -33,8 +33,9 @@ function isActive(to: string): boolean {
         Spark<span class="tiny:hidden"><span class="text-accent">.</span>dev</span>
       </RouterLink>
       <!-- With a large browser text size the links scroll inside the pill instead of
-           running off screen, where overflow-x: clip would hide them for good. -->
-      <ul class="flex min-w-0 items-center gap-[0.125rem] overflow-x-auto [scrollbar-width:none]">
+           running off screen, where overflow-x: clip would hide them for good. The
+           padding keeps the 2px + 2px focus ring inside the scrollport, which clips it. -->
+      <ul class="flex min-w-0 items-center gap-[0.125rem] overflow-x-auto scroll-px-[0.25rem] p-[0.25rem] [scrollbar-width:none]">
         <li v-for="link in links" :key="link.to">
           <RouterLink
             :to="link.to"

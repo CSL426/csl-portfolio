@@ -211,6 +211,22 @@ test.describe('phone', () => {
       const box = (await link.boundingBox())!
       expect(box.x).toBeGreaterThanOrEqual(0)
       expect(box.x + box.width).toBeLessThanOrEqual(vw)
+
+      // The link list scrolls, so it clips: the focus ring must still fit inside it.
+      await link.focus()
+      const ringFits = await link.evaluate((a) => {
+        const list = a.closest('ul')!.getBoundingClientRect()
+        const b = a.getBoundingClientRect()
+        const cs = getComputedStyle(a)
+        const ring = parseFloat(cs.outlineWidth) + parseFloat(cs.outlineOffset)
+        return (
+          b.left - ring >= list.left - 0.5 &&
+          b.right + ring <= list.right + 0.5 &&
+          b.top - ring >= list.top - 0.5 &&
+          b.bottom + ring <= list.bottom + 0.5
+        )
+      })
+      expect(ringFits).toBe(true)
     }
   })
 })
