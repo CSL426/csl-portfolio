@@ -1,0 +1,59 @@
+/* Hallmark · genre: modern-minimal · macrostructure: Split Studio (marketing) / Workbench (app) · design-system: design.md · designed-as-app
+ * theme: custom (cool engineered paper · anchor hue 242 · Space Grotesk + Noto Sans TC + JetBrains Mono)
+ * nav: N5 Floating pill · footer: Ft2 Inline single line · motion: motion-cut
+ * Hallmark · pre-emit critique: P4 H4 E4 S4 R5 V4
+ */
+:root {
+  /* Colour — OKLCH, anchored on the existing cool blue (H ≈ 242). */
+  --color-paper: oklch(97.2% 0.006 242);
+  --color-paper-2: oklch(99.2% 0.003 242);
+  --color-surface-subtle: oklch(94.2% 0.011 242);
+  --color-ink: oklch(22% 0.02 250);
+  --color-ink-hover: oklch(32% 0.025 250);
+  --color-ink-2: oklch(46% 0.02 248);
+  --color-rule: oklch(87% 0.014 242);
+  /* Form control borders: --color-rule is only 1.45:1 on paper, too faint to find a field. */
+  --color-rule-strong: oklch(62% 0.02 245);
+  --color-accent: oklch(48% 0.12 245);
+  --color-accent-soft: oklch(71% 0.08 242);
+  --color-focus: oklch(48% 0.12 245);
+  --color-on-ink: oklch(99.2% 0.003 242);
+  --color-status-live-bg: oklch(94% 0.04 155);
+  --color-status-live-fg: oklch(38% 0.1 155);
+  --color-status-soon-bg: oklch(95% 0.05 85);
+  --color-status-soon-fg: oklch(44% 0.1 75);
+  --color-status-muted-bg: oklch(93% 0.008 242);
+  --color-status-muted-fg: oklch(46% 0.02 248);
+  --color-danger: oklch(50% 0.18 25);
+  --color-shadow: oklch(22% 0.02 250 / 0.12);
+
+  /* Type — display is always roman. */
+  --font-display: 'Space Grotesk', 'Noto Sans TC', sans-serif;
+  --font-body: 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-display: clamp(2.75rem, 6vw + 1rem, 5rem);
+  --tracking-display: -0.025em;
+
+  /* Space — 4-point scale. */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+
+  /* Shape and motion. */
+  --rule-hair: 1px;
+  --radius-card: 0.75rem;
+  --radius-control: 0.5rem;
+  --radius-pill: 999px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-short: 180ms;
+}

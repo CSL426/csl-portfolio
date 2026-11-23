@@ -12,23 +12,20 @@ function handlePrint() {
   <div class="flex flex-col items-center gap-[1.125rem] px-[1rem] py-[1.5rem] print:gap-0 print:p-0">
     <!-- Toolbar -->
     <div
-      class="no-print sticky top-[3.5rem] z-20 flex w-full max-w-[52rem] flex-wrap items-center justify-between gap-[0.75rem] rounded-[1rem] bg-white/85 px-[1.25rem] py-[0.75rem] shadow-card backdrop-blur"
+      class="no-print flex w-full max-w-[52rem] flex-wrap items-center justify-between gap-[0.75rem] rounded-[var(--radius-card)] border border-rule bg-paper-2 px-[1.25rem] py-[0.75rem]"
     >
-      <div>
-        <p class="text-[0.75rem] tracking-[0.2em] text-brand-muted">ATS RESUME</p>
-        <h2 class="text-[1.125rem] font-bold">廖啓舜 · ATS 純文字版</h2>
-      </div>
+      <p class="font-display text-[1.125rem] font-bold">廖啓舜 · ATS 純文字版</p>
       <div class="flex flex-wrap items-center gap-[0.5rem]">
         <IconButton label="列印 / 另存 PDF" @click="handlePrint" />
         <RouterLink
           to="/resume"
-          class="inline-flex items-center rounded-full border border-brand-ink/15 bg-white px-[1.125rem] py-[0.5rem] text-[0.875rem] font-medium text-brand-ink transition hover:bg-brand-sidebar"
+          class="inline-flex items-center whitespace-nowrap rounded-full border border-rule-strong bg-paper-2 px-[1.125rem] py-[0.5rem] text-[0.875rem] font-medium text-ink transition-colors duration-[180ms] ease-[var(--ease-out)] hover:bg-surface-subtle active:translate-y-px"
         >
           回視覺版
         </RouterLink>
       </div>
     </div>
-    <p class="no-print w-full max-w-[52rem] text-[0.8125rem] leading-[1.7] text-brand-muted">
+    <p class="no-print w-full max-w-[52rem] text-[0.8125rem] leading-[1.7] text-ink-2">
       此版本為 ATS（求職系統自動篩選）友善格式：單欄、純文字、無照片與圖示。請用「列印 /
       另存 PDF」輸出，文字可被系統正確解析；勿使用視覺版的圖片式 PDF 上傳求職平台。
     </p>

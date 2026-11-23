@@ -35,15 +35,26 @@ set plus `ruff format --check` and the web build; `deploy-cloudrun.yml` ships `m
 
 ## Web conventions
 
-- Tailwind with arbitrary values in `rem` (`px-[1.25rem]`), brand tokens from
-  `tailwind.config.ts`: `brand-start #76abd6`, `brand-end #8ebfe5`,
-  `brand-sidebar #e8edf3`, `brand-page #edf1f5`, `brand-ink #1f2633`, `brand-muted #4a5568`.
-- Font stack: `"Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Segoe UI", sans-serif`.
-- Cards: white, radius 1.25–1.75 rem, `shadow-card`; section kicker in tracked uppercase.
+- **`design.md` (repo root) is the design system's source of truth.** Tokens live in
+  `src/styles/tokens.css` (OKLCH) and map to Tailwind names in `tailwind.config.ts`
+  (`bg-paper`, `bg-paper-2`, `text-ink`, `text-ink-2`, `border-rule`, `border-rule-strong`,
+  `text-accent` …). Pages use these names, never raw colour values.
+- Tailwind with arbitrary values in `rem` (`px-[1.25rem]`). Small-phone variants are the
+  named screens `narrow:` (≤ 22.5rem) and `tiny:` (≤ 21rem); Tailwind 3 rejects arbitrary
+  `max-[…rem]` variants.
+- Fonts: `font-display` Space Grotesk (headings, roman only), body Noto Sans TC,
+  `font-mono` JetBrains Mono for years, code, stack tags and agent names.
+- Structure comes from hairline rules and single bordered surfaces: no shadowed cards,
+  no uppercase eyebrow kickers, no gradient text. Controls get a visible `:focus-visible`
+  ring and `active:translate-y-px`.
+- The old `brand.*` colours (`brand-ink #1f2633` …) remain only for the A4 resume
+  components and the chat's user bubble (`.bg-brand-ink`, an e2e selector).
+- html2canvas cannot parse `oklch()`: keep it out of `.resume-page`; `useDownload.ts`
+  swaps the page background to rgba while exporting.
 - Chinese copy uses full-width punctuation（，；：（））. `src/data/content.test.ts`
   fails on half-width marks next to CJK characters.
 - New page = route in `router/index.ts` (with `meta.title`) + link in `components/ui/AppNav.vue`
-  + card on `HomePage.vue` if it is a top-level section.
+  + an entry in the `HomePage.vue` routing block if it is a top-level section.
 - Heavy libraries (html2canvas, jsPDF) are dynamically imported; keep the resume
   page chunk small.
 - No runtime config is baked into the bundle; nginx `envsubst` injects it at container start.

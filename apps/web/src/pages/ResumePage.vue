@@ -53,12 +53,9 @@ function handleOfficialPdf() {
   <div class="flex flex-col items-center gap-[1.125rem] px-[1rem] py-[1.5rem] print:gap-0 print:p-0">
     <!-- Toolbar -->
     <div
-      class="no-print sticky top-[3.5rem] z-20 flex w-full max-w-[52rem] flex-wrap items-center justify-between gap-[0.75rem] rounded-[1rem] bg-white/85 px-[1.25rem] py-[0.75rem] shadow-card backdrop-blur"
+      class="no-print flex w-full max-w-[52rem] flex-wrap items-center justify-between gap-[0.75rem] rounded-[var(--radius-card)] border border-rule bg-paper-2 px-[1.25rem] py-[0.75rem]"
     >
-      <div>
-        <p class="text-[0.75rem] tracking-[0.2em] text-brand-muted">RESUME</p>
-        <h2 class="text-[1.125rem] font-bold">廖啓舜 · Liao Chi-Shun</h2>
-      </div>
+      <p class="font-display text-[1.125rem] font-bold">廖啓舜 · Liao Chi-Shun</p>
       <div class="flex flex-wrap items-center gap-[0.5rem]">
         <IconButton
           label="下載 PDF (現場輸出)"
@@ -78,14 +75,14 @@ function handleOfficialPdf() {
         />
         <RouterLink
           to="/resume/ats"
-          class="inline-flex items-center rounded-full border border-brand-ink/15 bg-white px-[1.125rem] py-[0.5rem] text-[0.875rem] font-medium text-brand-ink transition hover:bg-brand-sidebar"
+          class="inline-flex items-center whitespace-nowrap rounded-full border border-rule-strong bg-paper-2 px-[1.125rem] py-[0.5rem] text-[0.875rem] font-medium text-ink transition-colors duration-[180ms] ease-[var(--ease-out)] hover:bg-surface-subtle active:translate-y-px"
         >
           ATS 版
         </RouterLink>
       </div>
     </div>
-    <p v-if="error" class="no-print text-[0.875rem] text-red-600">{{ error }}</p>
-    <p v-if="isExporting" class="no-print text-[0.875rem] text-brand-muted">輸出中…</p>
+    <p v-if="error" class="no-print text-[0.875rem] text-danger" role="alert">{{ error }}</p>
+    <p v-if="isExporting" class="no-print text-[0.875rem] text-ink-2">輸出中…</p>
 
     <!-- Page 1 -->
     <ResumeSheet ref="page1" :scale="sheetScale">

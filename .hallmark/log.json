@@ -1,0 +1,14 @@
+[
+  {
+    "date": "2026-11-23",
+    "scope": "app",
+    "macrostructure": "Split Studio (marketing) · editorial case (content) · Workbench (app)",
+    "theme": "custom",
+    "theme_axes": "light / grotesk-sans / cool",
+    "vibe": "restrained engineer and researcher tool",
+    "nav": "N5 Floating pill",
+    "footer": "Ft2 Inline single line",
+    "enrichment": "none",
+    "brief": "csl-portfolio · multi-page redesign per docs/frontend-redesign-spec.md"
+  }
+]

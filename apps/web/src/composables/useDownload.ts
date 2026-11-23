@@ -5,6 +5,51 @@ import { nextTick, ref } from 'vue'
 const loadHtml2Canvas = () => import('html2canvas').then((m) => m.default)
 const loadJsPdf = () => import('jspdf').then((m) => m.default)
 
+/** Resolve any CSS colour the browser understands to an `rgba()` string. */
+export function toRgb(color: string): string {
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = 1
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })
+  if (!ctx) return '#ffffff'
+  ctx.fillStyle = color
+  ctx.fillRect(0, 0, 1, 1)
+  const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data
+  return `rgba(${r}, ${g}, ${b}, ${a / 255})`
+}
+
+let rgbBackgroundUsers = 0
+let savedBackgrounds: string[] = []
+
+/**
+ * html2canvas 1.x always parses the <html> and <body> backgrounds, whatever node
+ * it captures, and throws on oklch(). Swap in the same colour as rgba() while it
+ * runs; the returned function puts the page back.
+ */
+export function withRgbPageBackground(): () => void {
+  const targets = [document.documentElement, document.body]
+  // Exports can overlap (a failed jsPDF import releases the buttons while a capture
+  // still runs). Only the first one saves the page's own values and only the last
+  // one restores them, so a nested call cannot save and later restore the rgba swap.
+  if (rgbBackgroundUsers === 0) {
+    savedBackgrounds = targets.map((el) => el.style.backgroundColor)
+    targets.forEach((el) => {
+      el.style.backgroundColor = toRgb(getComputedStyle(el).backgroundColor)
+    })
+  }
+  rgbBackgroundUsers += 1
+  let released = false
+  return () => {
+    if (released) return
+    released = true
+    rgbBackgroundUsers -= 1
+    if (rgbBackgroundUsers === 0) {
+      targets.forEach((el, i) => {
+        el.style.backgroundColor = savedBackgrounds[i]
+      })
+    }
+  }
+}
+
 export function useDownload() {
   const isExporting = ref(false)
   const error = ref<string | null>(null)
@@ -12,14 +57,19 @@ export function useDownload() {
   async function captureNodes(nodes: HTMLElement[]): Promise<HTMLCanvasElement[]> {
     const html2canvas = await loadHtml2Canvas()
     const canvases: HTMLCanvasElement[] = []
-    for (const node of nodes) {
-      const canvas = await html2canvas(node, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-      })
-      canvases.push(canvas)
+    const restore = withRgbPageBackground()
+    try {
+      for (const node of nodes) {
+        const canvas = await html2canvas(node, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+        })
+        canvases.push(canvas)
+      }
+    } finally {
+      restore()
     }
     return canvases
   }
